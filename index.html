@@ -390,7 +390,27 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
     <div class="fg"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
     <div class="fg"><label>Senha</label><input type="password" id="l-pass" placeholder="••••••••"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
-    <div class="hint">Use seu email e senha cadastrados</div>
+    <div style="text-align:center;margin-top:14px">
+      <span style="color:var(--mu);font-size:12px">Primeiro acesso? </span>
+      <button onclick="showRegister()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;">Criar conta →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ REGISTER ════ -->
+<div id="register-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div class="login-bg-fx"></div>
+  <div class="login-card">
+    <div class="lc-logo">✦ Criar Conta</div>
+    <div class="lc-sub">Ecossistema de Vida · Novo Aluno</div>
+    <div class="fg"><label>Nome completo</label><input type="text" id="reg-nome" placeholder="Seu nome completo"></div>
+    <div class="fg"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+    <div class="fg"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+    <div id="reg-feedback" style="display:none;padding:12px;border-radius:10px;font-size:13px;margin-bottom:10px;line-height:1.5"></div>
+    <button class="btn-primary" id="reg-btn" onclick="doRegister()">Criar minha conta</button>
+    <div style="text-align:center;margin-top:14px">
+      <button onclick="showLogin()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;">← Voltar ao login</button>
+    </div>
   </div>
 </div>
 
@@ -1087,6 +1107,56 @@ function doLogout(){
   document.getElementById('login-screen').style.display='flex';
   document.querySelector('#login-screen .btn-primary').textContent='Entrar';
   document.querySelector('#login-screen .btn-primary').disabled=false;
+}
+
+function showRegister(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('register-screen').style.display='flex';
+}
+function showLogin(){
+  document.getElementById('register-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+async function doRegister(){
+  const nome=document.getElementById('reg-nome').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const fb=document.getElementById('reg-feedback');
+  if(!nome||!email||!pass){alert('Preencha todos os campos.');return;}
+  if(pass.length<6){alert('Senha precisa ter pelo menos 6 caracteres.');return;}
+  const btn=document.getElementById('reg-btn');
+  btn.textContent='Criando conta...';btn.disabled=true;
+  fb.style.display='none';
+  try{
+    const r=await fetch(SUPA_URL+'/auth/v1/signup',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+      body:JSON.stringify({email,password:pass,options:{data:{nome}}})
+    });
+    const data=await r.json();
+    if(data.error){
+      fb.style.display='block';
+      fb.style.background='var(--rda)';
+      fb.style.border='1px solid rgba(224,82,82,0.3)';
+      fb.style.color='var(--rd)';
+      fb.textContent='Erro: '+(data.error.message||'Tente novamente.');
+      btn.textContent='Criar minha conta';btn.disabled=false;return;
+    }
+    fb.style.display='block';
+    fb.style.background='var(--gna)';
+    fb.style.border='1px solid rgba(57,184,116,0.3)';
+    fb.style.color='var(--gn)';
+    fb.textContent='✅ Conta criada com sucesso! Agora faça login com seu email e senha.';
+    setTimeout(()=>{
+      showLogin();
+      document.getElementById('l-email').value=email;
+    },2000);
+  }catch(e){
+    fb.style.display='block';
+    fb.style.background='var(--rda)';
+    fb.textContent='Erro de conexão. Tente novamente.';
+  }
+  btn.textContent='Criar minha conta';btn.disabled=false;
 }
 
 // ─── ONBOARDING ───
