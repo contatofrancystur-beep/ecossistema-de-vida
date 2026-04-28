@@ -22,8 +22,7 @@
 html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',sans-serif;}
 
 /* ══ MORNING RITUAL OVERLAY ══ */
-#ritual-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;align-items:flex-start;justify-content:center;padding:24px 20px;opacity:1;transition:opacity 0.6s;overflow-y:auto;}
-#ritual-overlay.show{display:flex;}
+#ritual-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;display:flex;align-items:flex-start;justify-content:center;padding:24px 20px;opacity:1;transition:opacity 0.6s;overflow-y:auto;}
 #ritual-overlay.hide{opacity:0;pointer-events:none;}
 .ritual-card{max-width:560px;width:100%;text-align:center;padding-bottom:20px;}
 .ritual-time{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;}
@@ -391,27 +390,9 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
     <div class="fg"><label>E-mail</label><input type="email" id="l-email" value="admin@mentoria.com"></div>
     <div class="fg"><label>Senha</label><input type="password" id="l-pass" value="admin123"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
-    <div style="text-align:center;margin-top:14px">
-      <span style="color:var(--mu);font-size:12px">Primeiro acesso? </span>
-      <button onclick="showRegister()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;">Criar conta →</button>
-    </div>
+    <div class="hint">Admin: <strong>admin@mentoria.com</strong> / <strong>admin123</strong><br>Aluno: <strong>joao@email.com</strong> / <strong>123456</strong></div>
   </div>
 </div>
-
-<!-- REGISTER SCREEN -->
-<div id="register-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;align-items:center;justify-content:center;padding:20px;">
-  <div class="login-bg-fx"></div>
-  <div class="login-card">
-    <div class="lc-logo">✦ Criar Conta</div>
-    <div class="lc-sub">Ecossistema de Vida · Novo Aluno</div>
-    <div class="fg"><label>Nome completo</label><input type="text" id="reg-nome" placeholder="Seu nome completo"></div>
-    <div class="fg"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
-    <div class="fg"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
-    <button class="btn-primary" onclick="doRegister()">Criar minha conta</button>
-    <div style="text-align:center;margin-top:14px">
-      <button onclick="showLogin()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;">← Voltar ao login</button>
-    </div>
-  </div>
 
 <!-- ════ ONBOARDING ════ -->
 <div id="onboarding">
@@ -942,7 +923,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ADMIN -->
       <div class="page" id="page-admin">
-        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos</p></div>
+        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos da mentoria</p></div>
         <div class="ha">
           <button class="btn-sm" onclick="go('relatorio',null)">📄 Relatório</button>
           <button class="btn-gold" onclick="openM('m-invite')">+ Convidar Aluno</button>
@@ -1016,14 +997,14 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 <div class="modal-ov" id="m-invite">
   <div class="modal">
     <h3>✉️ Convidar Novo Aluno</h3>
-    <div class="al blue" style="margin-bottom:16px"><div class="aldot db"></div><div class="al-body"><div class="al-text">O aluno receberá um email com o link de acesso e a senha temporária que você definir.</div></div></div>
-    <div class="fg"><label>Nome completo do aluno</label><input id="inv-nome" placeholder="Ex: João Silva"></div>
+    <div class="al blue" style="margin-bottom:16px"><div class="aldot db"></div><div class="al-body"><div class="al-text">Cadastre o aluno e envie o link <strong>ecossistema-de-vida.vercel.app</strong> com o email e senha abaixo.</div></div></div>
+    <div class="fg"><label>Nome completo</label><input id="inv-nome" placeholder="Ex: João Silva"></div>
     <div class="fg"><label>Email do aluno</label><input type="email" id="inv-email" placeholder="Ex: joao@email.com"></div>
-    <div class="fg"><label>Senha temporária</label><input type="text" id="inv-pass" placeholder="Ex: Mentoria@2026" value="Mentoria@2026"></div>
-    <div id="inv-feedback" style="display:none;padding:12px;border-radius:10px;font-size:13px;margin-top:10px;line-height:1.5"></div>
+    <div class="fg"><label>Senha temporária</label><input type="text" id="inv-pass" value="Mentoria@2026"></div>
+    <div id="inv-feedback" style="display:none;padding:12px;border-radius:10px;font-size:13px;margin-top:10px;line-height:1.5;background:var(--gna);border:1px solid rgba(57,184,116,0.3)"></div>
     <div class="mbtns">
       <button class="btn-cancel" onclick="closeM('m-invite')">Cancelar</button>
-      <button class="btn-gold" id="inv-btn" onclick="inviteStudent()">✉️ Cadastrar e Enviar Email</button>
+      <button class="btn-gold" onclick="saveInvite()">✉️ Salvar Aluno</button>
     </div>
   </div>
 </div>
@@ -1043,38 +1024,11 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 </div>
 
 <script>
-// ─── SUPABASE CONFIG ───
-const SUPA_URL='https://mnhsbfyineanezsflcqj.supabase.co';
-const SUPA_KEY='sb_publishable_u8WbN1N7yjuY2JWyvQxeyw_6ujOjxhu';
-
-async function supaFetch(path, method='GET', body=null, token=null){
-  const headers={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(token||SUPA_KEY)};
-  const opts={method,headers};
-  if(body) opts.body=JSON.stringify(body);
-  const r=await fetch(SUPA_URL+path,opts);
-  return r.json();
-}
-
-async function supaAuth(email,pass){
-  const r=await fetch(SUPA_URL+'/auth/v1/token?grant_type=password',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-    body:JSON.stringify({email,password:pass})
-  });
-  return r.json();
-}
-
-async function supaSignup(email,pass,nome){
-  const r=await fetch(SUPA_URL+'/auth/v1/signup',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
-    body:JSON.stringify({email,password:pass,options:{data:{nome}}})
-  });
-  return r.json();
-}
-
 // ─── DATA ───
-const ADMIN_EMAIL='mentorandreifrancisconi@gmail.com';
+const USERS={
+  'admin@mentoria.com':{pass:'admin123',name:'Admin',role:'admin',lvl:'👑 Admin',av:'👑'},
+  'joao@email.com':{pass:'123456',name:'João Silva',role:'user',lvl:'🔵 Safira',av:'👤',newUser:true}
+};
 const VERSES=[
   {t:'"Tudo posso naquele que me fortalece."',r:'Filipenses 4:13'},
   {t:'"O Senhor é meu pastor, nada me faltará."',r:'Salmos 23:1'},
@@ -1086,151 +1040,18 @@ const VERSES=[
 const CRISIS_WORDS=['cansado','esgotado','deprimido','triste','ansioso','desanimado','difícil','não aguento','não consigo','desistir','sem forças','sofrendo','angustiado','perdido'];
 let CU=null,jAlertId=null,obStep2=1;
 
-function showRegister(){
-  document.getElementById('login-screen').style.display='none';
-  const r=document.getElementById('register-screen');
-  r.style.display='flex';
-}
-function showLogin(){
-  document.getElementById('register-screen').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-}
-async function doRegister(){
-  const nome=document.getElementById('reg-nome').value.trim();
-  const email=document.getElementById('reg-email').value.trim();
-  const pass=document.getElementById('reg-pass').value;
-  if(!nome||!email||!pass){alert('Preencha todos os campos.');return;}
-  if(pass.length<6){alert('Senha precisa ter pelo menos 6 caracteres.');return;}
-  const btn=document.getElementById('register-screen').querySelector('.btn-primary');
-  btn.textContent='Criando conta...';btn.disabled=true;
-  try{
-    const data=await supaSignup(email,pass,nome);
-    if(data.error){
-      alert('Erro: '+(data.error.message||'Tente novamente.'));
-      btn.textContent='Criar minha conta';btn.disabled=false;return;
-    }
-    alert('✅ Conta criada! Verifique seu email para confirmar o cadastro, depois faça login.');
-    showLogin();
-    document.getElementById('l-email').value=email;
-  }catch(e){
-    alert('Erro ao criar conta. Tente novamente.');
-  }
-  btn.textContent='Criar minha conta';btn.disabled=false;
-}
-
-// ─── ADMIN INVITE STUDENT ───
-async function inviteStudent(){
-  const nome=document.getElementById('inv-nome').value.trim();
-  const email=document.getElementById('inv-email').value.trim();
-  const pass=document.getElementById('inv-pass').value.trim();
-  if(!nome||!email||!pass){alert('Preencha todos os campos.');return;}
-  const btn=document.getElementById('inv-btn');
-  const fb=document.getElementById('inv-feedback');
-  btn.textContent='Cadastrando...';btn.disabled=true;
-  fb.style.display='none';
-  try{
-    // Create user via Supabase Admin API
-    const r=await fetch(SUPA_URL+'/auth/v1/admin/users',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'apikey':SUPA_KEY,
-        'Authorization':'Bearer '+CU.token
-      },
-      body:JSON.stringify({
-        email,
-        password:pass,
-        email_confirm:true,
-        user_metadata:{nome}
-      })
-    });
-    const data=await r.json();
-    if(data.error||!data.id){
-      fb.style.display='block';
-      fb.style.background='var(--rda)';
-      fb.style.border='1px solid rgba(224,82,82,0.3)';
-      fb.textContent='Erro: '+(data.msg||data.error?.message||'Tente novamente.');
-      btn.textContent='✉️ Cadastrar e Enviar Email';btn.disabled=false;return;
-    }
-    // Send invite email via Supabase
-    await fetch(SUPA_URL+'/auth/v1/admin/users/'+data.id+'/send-email',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+CU.token},
-      body:JSON.stringify({type:'invite'})
-    }).catch(()=>{});
-
-    fb.style.display='block';
-    fb.style.background='var(--gna)';
-    fb.style.border='1px solid rgba(57,184,116,0.3)';
-    fb.textContent=`✅ ${nome} cadastrado com sucesso! Email enviado para ${email} com a senha temporária: ${pass}`;
-
-    // Add to table visually
-    const table=document.querySelector('.std-table');
-    const row=document.createElement('div');
-    row.className='std-r';
-    row.innerHTML=`<div class="std-name">${nome}</div><div>🪨 Pedra Bruta</div><div style="color:var(--mu);font-weight:800">—</div><div><span class="ac" style="background:var(--gna);color:var(--gn)">Novo</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-ok">Ativo</span></div>`;
-    table.appendChild(row);
-
-    document.getElementById('inv-nome').value='';
-    document.getElementById('inv-email').value='';
-  }catch(e){
-    fb.style.display='block';
-    fb.style.background='var(--rda)';
-    fb.textContent='Erro ao cadastrar. Verifique sua conexão.';
-  }
-  btn.textContent='✉️ Cadastrar e Enviar Email';btn.disabled=false;
-}
-
 // ─── LOGIN ───
-async function doLogin(){
-  const email=document.getElementById('l-email').value.trim();
-  const pass=document.getElementById('l-pass').value;
-  if(!email||!pass){alert('Preencha email e senha.');return;}
-  const btn=document.querySelector('#login-screen .btn-primary');
-  btn.textContent='Entrando...';btn.disabled=true;
-  try{
-    const data=await supaAuth(email,pass);
-    if(data.error||!data.access_token){
-      alert('Email ou senha incorretos.');
-      btn.textContent='Entrar';btn.disabled=false;return;
-    }
-    const profile=await supaFetch(`/rest/v1/profiles?id=eq.${data.user.id}&select=*`,'GET',null,data.access_token);
-    const p=Array.isArray(profile)&&profile[0]?profile[0]:{};
-    const isAdmin=email===ADMIN_EMAIL;
-    CU={
-      id:data.user.id,
-      email,
-      name:p.nome||email.split('@')[0],
-      role:isAdmin?'admin':(p.role||'aluno'),
-      lvl:isAdmin?'👑 Admin':(p.nivel?'💎 '+p.nivel:'🪨 Pedra Bruta'),
-      av:isAdmin?'👑':'👤',
-      token:data.access_token,
-      newUser:!p.nome
-    };
-    // Hide all screens first
-    document.getElementById('login-screen').style.cssText='display:none!important';
-    document.getElementById('register-screen').style.cssText='display:none!important';
-    document.getElementById('onboarding').style.cssText='display:none!important';
-    document.getElementById('ritual-overlay').style.cssText='display:none!important';
-    if(CU.role!=='admin'&&CU.newUser){
-      document.getElementById('onboarding').style.cssText='display:block!important;position:fixed;inset:0;background:var(--bg);z-index:1800;overflow-y:auto;';
-    } else {
-      startApp();
-    }
-  }catch(err){
-    alert('Erro ao conectar. Verifique sua internet.');
-    btn.textContent='Entrar';btn.disabled=false;
-  }
+function doLogin(){
+  const e=document.getElementById('l-email').value;
+  const p=document.getElementById('l-pass').value;
+  const u=USERS[e];
+  if(!u||u.pass!==p){alert('Email ou senha incorretos.');return;}
+  CU={...u,email:e};
+  document.getElementById('login-screen').style.display='none';
+  if(u.role==='user'&&u.newUser){document.getElementById('onboarding').style.display='block';}
+  else{startApp();}
 }
-
-async function doLogout(){
-  await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+(CU?.token||'')}});
-  CU=null;
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.querySelector('.btn-primary').textContent='Entrar';
-  document.querySelector('.btn-primary').disabled=false;
-}
+function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
 
 // ─── ONBOARDING ───
 function civilChange(){
@@ -1253,27 +1074,11 @@ function obGo(n){
   obStep2=n;
   document.getElementById('os'+n).classList.add('active');
 }
-async function finishOb(){
+function finishOb(){
   const nome=document.getElementById('ob-nome').value||'Amigo';
-  const mae=document.getElementById('ob-mae').value||'';
-  const pai=document.getElementById('ob-pai').value||'';
-  const civil=document.getElementById('ob-civil').value||'';
-  const conjuge=document.getElementById('ob-conjuge').value||'';
-  const academia=document.getElementById('ob-ac').value||'';
-  const igreja=document.getElementById('ob-igreja').value||'';
-  const perfilFin=document.getElementById('ob-pf').value||'ambos';
-  const empresa=document.getElementById('ob-emp').value||'';
-  const meta=parseFloat(document.getElementById('ob-meta').value)||0;
-
-  // Save to Supabase
-  try{
-    await supaFetch(`/rest/v1/profiles?id=eq.${CU.id}`,'PATCH',{
-      nome,mae,pai,civil,conjuge,academia,igreja,
-      perfil_financeiro:perfilFin,empresa,meta_faturamento:meta
-    },CU.token);
-  }catch(e){console.log('Profile save error',e);}
-
-  CU.name=nome;CU.newUser=false;
+  const mae=document.getElementById('ob-mae').value;
+  USERS['joao@email.com'].name=nome;
+  USERS['joao@email.com'].newUser=false;
   if(mae)document.getElementById('n-mae').textContent=mae;
   document.getElementById('onboarding').style.display='none';
   startApp();
@@ -1281,14 +1086,7 @@ async function finishOb(){
 
 // ─── START APP ───
 function startApp(){
-  // Force hide all overlays
-  ['login-screen','register-screen','onboarding','ritual-overlay'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.style.cssText='display:none!important';
-  });
-  // Force show app
-  const app=document.getElementById('app');
-  app.style.cssText='display:block!important';
+  document.getElementById('app').style.display='block';
   const u=CU;
   document.getElementById('sb-av').textContent=u.av;
   document.getElementById('sb-name').textContent=u.name;
@@ -1303,11 +1101,8 @@ function startApp(){
   document.getElementById('d-rab').style.display='block';
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('d-verse').textContent=v.t;
-  // Activate dashboard
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-dashboard').classList.add('active');
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.nb').classList.add('active');
+  // Show ritual after short delay
+  setTimeout(()=>showRitual(),400);
 }
 
 // ─── RITUAL ───
@@ -1322,21 +1117,14 @@ function showRitual(){
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('r-verse').textContent=v.t;
   document.getElementById('r-ref').textContent=v.r;
+  const icon=document.querySelector('.ritual-icon');
   const h=now.getHours();
-  document.querySelector('.ritual-icon').textContent=h<12?'🌅':h<18?'☀️':'🌙';
-  document.querySelector('.ritual-greeting').innerHTML=`${h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite'}, <span class="ritual-name">${u.name.split(' ')[0]}</span>.`;
+  icon.textContent=h<12?'🌅':h<18?'☀️':'🌙';
 }
 function closeRitual(){
   const o=document.getElementById('ritual-overlay');
   o.classList.add('hide');
-  setTimeout(()=>{
-    o.style.display='none';
-    // Make sure app is visible
-    document.getElementById('app').style.display='block';
-    // Make sure dashboard is active
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById('page-dashboard').classList.add('active');
-  },600);
+  setTimeout(()=>o.style.display='none',600);
 }
 
 // ─── NAV ───
@@ -1470,6 +1258,24 @@ function saveCarta(){
   alert('💌 Carta selada! Será enviada para você em 27 de outubro de 2026. A IA irá comparar com seu progresso no app. Obrigado por se comprometer com o futuro!');
   document.querySelector('.seal.off:nth-child(6)').classList.remove('off');
   document.querySelector('.seal.off:nth-child(6)').classList.add('on');
+}
+
+// ─── INVITE ───
+function saveInvite(){
+  const nome=document.getElementById('inv-nome').value.trim();
+  const email=document.getElementById('inv-email').value.trim();
+  const pass=document.getElementById('inv-pass').value.trim();
+  if(!nome||!email){alert('Preencha nome e email.');return;}
+  const fb=document.getElementById('inv-feedback');
+  fb.style.display='block';
+  fb.textContent=`✅ Aluno ${nome} registrado! Envie: Email: ${email} | Senha: ${pass} | Link: ecossistema-de-vida.vercel.app`;
+  const table=document.querySelector('.std-table');
+  if(table){
+    const row=document.createElement('div');row.className='std-r';
+    row.innerHTML=`<div class="std-name">${nome}</div><div>🪨 Pedra Bruta</div><div style="color:var(--mu);font-weight:800">—</div><div><span class="ac" style="background:var(--gna);color:var(--gn)">Novo</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-ok">Ativo</span></div>`;
+    table.appendChild(row);
+  }
+  document.getElementById('inv-nome').value='';document.getElementById('inv-email').value='';
 }
 
 // ─── AI CHAT (CRISIS DETECTION) ───
