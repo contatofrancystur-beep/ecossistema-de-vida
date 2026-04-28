@@ -22,7 +22,8 @@
 html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',sans-serif;}
 
 /* ══ MORNING RITUAL OVERLAY ══ */
-#ritual-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;display:flex;align-items:flex-start;justify-content:center;padding:24px 20px;opacity:1;transition:opacity 0.6s;overflow-y:auto;}
+#ritual-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;align-items:flex-start;justify-content:center;padding:24px 20px;opacity:1;transition:opacity 0.6s;overflow-y:auto;}
+#ritual-overlay.show{display:flex;}
 #ritual-overlay.hide{opacity:0;pointer-events:none;}
 .ritual-card{max-width:560px;width:100%;text-align:center;padding-bottom:20px;}
 .ritual-time{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;}
@@ -1278,13 +1279,13 @@ async function finishOb(){
 // ─── START APP ───
 function startApp(){
   document.getElementById('app').style.display='block';
+  document.getElementById('ritual-overlay').style.display='none';
   const u=CU;
   document.getElementById('sb-av').textContent=u.av;
   document.getElementById('sb-name').textContent=u.name;
   document.getElementById('sb-lvl').textContent=u.lvl;
   if(u.role==='admin')document.getElementById('admin-nav').style.display='block';
   const now=new Date();
-  // Fix: use local Brazil time
   const h=now.getHours();
   const g=h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite';
   document.getElementById('d-greet').textContent=g+', '+u.name.split(' ')[0]+'! ✨';
@@ -1293,7 +1294,11 @@ function startApp(){
   document.getElementById('d-rab').style.display='block';
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('d-verse').textContent=v.t;
-  setTimeout(()=>showRitual(),400);
+  // Show dashboard
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.nb').classList.add('active');
 }
 
 // ─── RITUAL ───
@@ -1308,9 +1313,9 @@ function showRitual(){
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('r-verse').textContent=v.t;
   document.getElementById('r-ref').textContent=v.r;
-  const icon=document.querySelector('.ritual-icon');
   const h=now.getHours();
-  icon.textContent=h<12?'🌅':h<18?'☀️':'🌙';
+  document.querySelector('.ritual-icon').textContent=h<12?'🌅':h<18?'☀️':'🌙';
+  document.querySelector('.ritual-greeting').innerHTML=`${h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite'}, <span class="ritual-name">${u.name.split(' ')[0]}</span>.`;
 }
 function closeRitual(){
   const o=document.getElementById('ritual-overlay');
