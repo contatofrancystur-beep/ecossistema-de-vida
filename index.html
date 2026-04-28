@@ -1315,7 +1315,14 @@ function showRitual(){
 function closeRitual(){
   const o=document.getElementById('ritual-overlay');
   o.classList.add('hide');
-  setTimeout(()=>o.style.display='none',600);
+  setTimeout(()=>{
+    o.style.display='none';
+    // Make sure app is visible
+    document.getElementById('app').style.display='block';
+    // Make sure dashboard is active
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-dashboard').classList.add('active');
+  },600);
 }
 
 // ─── NAV ───
