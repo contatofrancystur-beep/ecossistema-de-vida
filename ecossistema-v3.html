@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ecossistema de Vida — V3</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070f;--s1:#0e0e1c;--s2:#141428;--s3:#1c1c35;
+  --bd:rgba(255,255,255,0.06);--bd2:rgba(255,255,255,0.11);
+  --t:#eeeaf4;--mu:#6b6b8a;--mu2:#44445a;
+  --go:#c8a44a;--go2:#e6c870;--ga:rgba(200,164,74,0.12);
+  --gn:#39b874;--gna:rgba(57,184,116,0.13);
+  --rd:#e05252;--rda:rgba(224,82,82,0.13);--rdb:rgba(224,82,82,0.22);
+  --bl:#5b9af5;--bla:rgba(91,154,245,0.13);
+  --pu:#9b7fe8;--pua:rgba(155,127,232,0.13);
+  --or:#ef8845;--ora:rgba(239,136,69,0.13);
+  --te:#28c8c8;--tea:rgba(40,200,200,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',sans-serif;}
+
+/* ══ MORNING RITUAL OVERLAY ══ */
+#ritual-overlay{position:fixed;inset:0;background:var(--bg);z-index:3000;display:flex;align-items:flex-start;justify-content:center;padding:24px 20px;opacity:1;transition:opacity 0.6s;overflow-y:auto;}
+#ritual-overlay.hide{opacity:0;pointer-events:none;}
+.ritual-card{max-width:560px;width:100%;text-align:center;padding-bottom:20px;}
+.ritual-time{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;}
+.ritual-icon{font-size:56px;margin-bottom:16px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.ritual-greeting{font-family:'Libre Baskerville',serif;font-size:34px;color:var(--t);margin-bottom:6px;}
+.ritual-name{color:var(--go);font-style:italic;}
+.ritual-verse{background:linear-gradient(135deg,rgba(155,127,232,0.07),rgba(200,164,74,0.05));border:1px solid rgba(200,164,74,0.18);border-radius:18px;padding:20px 28px;margin:24px 0;font-family:'Libre Baskerville',serif;font-style:italic;font-size:16px;color:var(--t);line-height:1.7;}
+.ritual-ref{font-size:11px;color:var(--go);text-transform:uppercase;letter-spacing:1px;margin-top:8px;font-family:'Syne',sans-serif;font-style:normal;}
+.ritual-question{font-size:15px;color:var(--t);margin-bottom:20px;line-height:1.6;}
+.ritual-question em{color:var(--go);font-style:normal;font-weight:700;}
+.ritual-priorities{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;text-align:left;}
+.rp-item{display:flex;align-items:center;gap:12px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;}
+.rp-num{width:24px;height:24px;border-radius:7px;background:var(--ga);color:var(--go);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rp-text{font-size:13px;}
+.ritual-scores{display:flex;gap:10px;justify-content:center;margin-bottom:28px;}
+.rs-item{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:12px 16px;text-align:center;flex:1;}
+.rs-icon{font-size:20px;margin-bottom:4px;}
+.rs-val{font-size:16px;font-weight:800;}
+.rs-lbl{font-size:10px;color:var(--mu);margin-top:2px;}
+.btn-start-day{background:linear-gradient(135deg,var(--go),var(--go2));color:#140f00;border:none;padding:16px 40px;border-radius:14px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;cursor:pointer;letter-spacing:0.5px;transition:opacity 0.2s;width:100%;}
+.btn-start-day:hover{opacity:0.9;}
+
+/* ══ LOGIN ══ */
+#login-screen{position:fixed;inset:0;background:var(--bg);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-bg-fx{position:absolute;inset:0;background:radial-gradient(ellipse at 25% 25%,rgba(200,164,74,0.05) 0%,transparent 55%),radial-gradient(ellipse at 75% 75%,rgba(91,154,245,0.04) 0%,transparent 55%);pointer-events:none;}
+.login-card{position:relative;background:var(--s1);border:1px solid var(--bd2);border-radius:28px;padding:48px 42px;width:100%;max-width:420px;box-shadow:0 80px 160px rgba(0,0,0,0.8);}
+.lc-logo{font-family:'Libre Baskerville',serif;font-size:30px;color:var(--go);text-align:center;margin-bottom:4px;}
+.lc-sub{text-align:center;color:var(--mu);font-size:12px;margin-bottom:36px;letter-spacing:0.5px;}
+.fg{margin-bottom:18px;}
+.fg label{display:block;font-size:11px;color:var(--mu);margin-bottom:7px;text-transform:uppercase;letter-spacing:1px;font-weight:600;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:13px 16px;border-radius:12px;font-family:'Syne',sans-serif;font-size:14px;outline:none;transition:border 0.2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--go);}
+.fg select option{background:var(--s2);}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--go),var(--go2));color:#140f00;border:none;padding:15px;border-radius:12px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;letter-spacing:0.5px;transition:opacity 0.2s;margin-top:6px;}
+.btn-primary:hover{opacity:0.9;}
+.hint{text-align:center;color:var(--mu2);font-size:11px;margin-top:16px;line-height:1.7;}
+.hint strong{color:var(--mu);}
+
+/* ══ ONBOARDING ══ */
+#onboarding{position:fixed;inset:0;background:var(--bg);z-index:1800;display:none;overflow-y:auto;}
+.ob-wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px 20px;}
+.ob-card{background:var(--s1);border:1px solid var(--bd2);border-radius:24px;padding:40px;max-width:600px;width:100%;box-shadow:0 60px 120px rgba(0,0,0,0.6);}
+.ob-card h2{font-family:'Libre Baskerville',serif;font-size:26px;color:var(--go);margin-bottom:6px;}
+.ob-card p{color:var(--mu);font-size:13px;margin-bottom:24px;line-height:1.7;}
+.ob-step{display:none;}.ob-step.active{display:block;}
+.sbar{display:flex;gap:5px;margin-bottom:28px;}
+.sd{height:3px;flex:1;background:var(--bd);border-radius:2px;transition:background 0.3s;}
+.sd.on{background:var(--go);}
+.cbs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cb-item{display:flex;align-items:center;gap:9px;background:var(--s2);padding:10px 13px;border-radius:9px;cursor:pointer;border:1px solid var(--bd);}
+.cb-item input{accent-color:var(--go);width:15px;height:15px;}
+.cb-item span{font-size:13px;}
+.people-list{display:flex;flex-direction:column;gap:8px;}
+.person-row{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;}
+.person-row input,.person-row select{font-family:'Syne',sans-serif;font-size:13px;background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:10px 13px;border-radius:9px;outline:none;}
+.rm-btn{background:var(--rda);border:1px solid rgba(224,82,82,0.3);color:var(--rd);width:36px;height:36px;border-radius:9px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+.add-btn{background:var(--s2);border:1px dashed var(--bd2);color:var(--mu);padding:10px;border-radius:9px;cursor:pointer;font-size:13px;width:100%;margin-top:6px;font-family:'Syne',sans-serif;transition:all 0.2s;}
+.add-btn:hover{border-color:var(--go);color:var(--go);}
+.btn-next{background:linear-gradient(135deg,var(--go),var(--go2));color:#140f00;border:none;padding:13px 24px;border-radius:11px;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;cursor:pointer;width:100%;margin-top:10px;}
+
+/* ══ APP ══ */
+#app{display:none;}
+.layout{display:grid;grid-template-columns:256px 1fr;min-height:100vh;}
+
+/* ══ SIDEBAR ══ */
+.sidebar{background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+.sb-top{padding:24px 20px 18px;border-bottom:1px solid var(--bd);}
+.sb-logo{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--go);letter-spacing:0.3px;}
+.sb-tagline{font-size:10px;color:var(--mu2);margin-top:2px;letter-spacing:0.5px;}
+.sb-user{display:flex;align-items:center;gap:11px;padding:16px 20px;border-bottom:1px solid var(--bd);}
+.sb-av{width:38px;height:38px;border-radius:11px;background:var(--ga);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.sb-info{flex:1;min-width:0;}
+.sb-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-lvl{font-size:11px;color:var(--mu);margin-top:2px;}
+.sb-nav{padding:10px 12px;flex:1;}
+.ns{font-size:9px;color:var(--mu2);text-transform:uppercase;letter-spacing:1.8px;padding:14px 10px 5px;font-weight:700;}
+.nb{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--mu);background:none;border:none;width:100%;text-align:left;font-family:'Syne',sans-serif;font-weight:500;transition:all 0.15s;}
+.nb:hover{background:var(--s2);color:var(--t);}
+.nb.active{background:var(--ga);color:var(--go);}
+.ni{width:18px;text-align:center;font-size:14px;}
+.nbadge{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:6px;font-weight:700;}
+.nb-red{background:var(--rd);color:#fff;}
+.nb-gold{background:var(--go);color:#140f00;}
+.sb-bottom{padding:14px 20px;border-top:1px solid var(--bd);}
+.logout-btn{background:var(--s2);border:1px solid var(--bd);color:var(--mu);padding:9px;border-radius:10px;cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;width:100%;}
+
+/* ══ CONTENT ══ */
+.content{padding:32px;overflow-y:auto;}
+.page{display:none;animation:fadein 0.25s ease;}.page.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+.ph h2{font-family:'Libre Baskerville',serif;font-size:27px;}
+.ph p{color:var(--mu);font-size:13px;margin-top:3px;}
+.ha{display:flex;gap:10px;}
+.btn-sm{background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:8px 16px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;transition:all 0.2s;}
+.btn-sm:hover{border-color:var(--go);color:var(--go);}
+.btn-gold{background:linear-gradient(135deg,var(--go),var(--go2));color:#140f00;border:none;padding:8px 18px;border-radius:9px;font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;}
+
+/* ══ CARDS ══ */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px;transition:border-color 0.2s;}
+.card:hover{border-color:rgba(200,164,74,0.22);}
+.ci{font-size:24px;margin-bottom:10px;}
+.cl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;font-weight:700;}
+.cv{font-size:22px;font-weight:800;}
+.csub{font-size:11px;color:var(--mu);margin-top:3px;}
+.bar{height:3px;background:var(--s3);border-radius:2px;margin-top:10px;}
+.bf{height:100%;border-radius:2px;transition:width 0.8s ease;}
+
+/* ══ VERSE ══ */
+.verse-box{background:linear-gradient(135deg,rgba(155,127,232,0.07),rgba(200,164,74,0.04));border:1px solid rgba(200,164,74,0.16);border-radius:18px;padding:20px 26px;margin-bottom:24px;text-align:center;}
+.vt{font-family:'Libre Baskerville',serif;font-style:italic;font-size:16px;line-height:1.7;}
+.vr{font-size:10px;color:var(--go);margin-top:8px;text-transform:uppercase;letter-spacing:1.2px;font-family:'Syne',sans-serif;}
+
+/* ══ AREAS ══ */
+.areas{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.area{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:15px;text-align:center;cursor:pointer;transition:all 0.2s;}
+.area:hover{transform:translateY(-2px);border-color:rgba(200,164,74,0.22);}
+.ai2{font-size:25px;margin-bottom:6px;}
+.an{font-size:10px;color:var(--mu);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.as2{font-size:19px;font-weight:800;}
+.abar{height:3px;background:var(--s3);border-radius:2px;margin-top:8px;}
+.af{height:100%;border-radius:2px;}
+.cg{color:var(--gn);}
+.cy{color:var(--go);}
+.cr{color:var(--rd);}
+
+/* ══ ALERTS ══ */
+.al{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:13px;margin-bottom:8px;border:1px solid;cursor:pointer;}
+.al.red{background:var(--rda);border-color:rgba(224,82,82,0.3);}
+.al.orange{background:var(--ora);border-color:rgba(239,136,69,0.25);}
+.al.blue{background:var(--bla);border-color:rgba(91,154,245,0.2);}
+.al.green{background:var(--gna);border-color:rgba(57,184,116,0.25);}
+.al.gold{background:var(--ga);border-color:rgba(200,164,74,0.25);}
+.aldot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.dr{background:var(--rd);box-shadow:0 0 8px var(--rd);}
+.do2{background:var(--or);}
+.db{background:var(--bl);}
+.dg{background:var(--gn);}
+.dgo{background:var(--go);}
+.al-body{flex:1;}
+.al-text{font-size:13px;line-height:1.5;}
+.al-meta{font-size:11px;color:var(--mu);margin-top:4px;}
+.btn-j{background:var(--rd);color:#fff;border:none;padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;flex-shrink:0;}
+
+/* ══ RED ALERT BANNER ══ */
+.rab{background:linear-gradient(135deg,var(--rdb),var(--rda));border:1px solid rgba(224,82,82,0.45);border-radius:14px;padding:16px 20px;margin-bottom:22px;display:flex;align-items:center;gap:14px;animation:pulsered 2s infinite;}
+@keyframes pulsered{0%,100%{border-color:rgba(224,82,82,0.45);}50%{border-color:rgba(224,82,82,0.85);}}
+.rab-icon{font-size:26px;flex-shrink:0;}
+.rab-text h4{font-size:13px;font-weight:800;color:var(--rd);margin-bottom:3px;}
+.rab-text p{font-size:12px;color:var(--mu);line-height:1.5;}
+.rab-btn{margin-left:auto;background:var(--rd);color:#fff;border:none;padding:8px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;flex-shrink:0;}
+
+/* ══ TASKS ══ */
+.tasks{display:flex;flex-direction:column;gap:7px;}
+.task{display:flex;align-items:center;gap:11px;padding:12px 15px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;transition:all 0.2s;}
+.task.overdue{border-color:rgba(224,82,82,0.38);background:rgba(224,82,82,0.04);}
+.tck{width:20px;height:20px;border:2px solid var(--bd2);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;}
+.tck.done{background:var(--gn);border-color:var(--gn);}
+.tck.done::after{content:'✓';color:#fff;font-size:10px;font-weight:800;}
+.tlbl{flex:1;font-size:13px;font-weight:500;}
+.tlbl.done{text-decoration:line-through;color:var(--mu);}
+.ttag{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;}
+.tsp{background:var(--pua);color:var(--pu);}
+.the{background:var(--gna);color:var(--gn);}
+.two{background:var(--bla);color:var(--bl);}
+.tfa{background:var(--ora);color:var(--or);}
+.tfi{background:var(--ga);color:var(--go);}
+.tur{background:var(--rda);color:var(--rd);}
+.tel{background:var(--tea);color:var(--te);}
+
+/* ══ STITLE ══ */
+.st{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;margin-top:22px;font-weight:700;}
+
+/* ══ FINANCES ══ */
+.fin-tabs{display:flex;gap:8px;margin-bottom:20px;}
+.ftab{padding:9px 18px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);color:var(--mu);cursor:pointer;font-size:12px;font-family:'Syne',sans-serif;font-weight:600;transition:all 0.2s;}
+.ftab.active{background:var(--ga);border-color:var(--go);color:var(--go);}
+.tx{display:flex;align-items:center;gap:11px;padding:13px 15px;background:var(--s1);border:1px solid var(--bd);border-radius:11px;margin-bottom:7px;}
+.tx-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ti{background:var(--gna);}.to{background:var(--rda);}
+.tx-info{flex:1;}
+.tx-n{font-size:13px;font-weight:600;}
+.tx-c{font-size:11px;color:var(--mu);margin-top:2px;}
+.tx-v{font-size:14px;font-weight:800;}
+.tvi{color:var(--gn);}.tvo{color:var(--rd);}
+
+/* ══ PRAYER ══ */
+.pr{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--s1);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;}
+.pr-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.pr-a{background:var(--go);}
+.pr-d{background:var(--gn);}
+.pr-t{font-size:13px;line-height:1.5;}
+.pr-dt{font-size:11px;color:var(--mu);margin-top:3px;}
+
+/* ══ PROJECTS ══ */
+.proj{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:12px;}
+.proj-h{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.proj-title{font-size:14px;font-weight:800;}
+.proj-dl{font-size:11px;color:var(--mu);margin-top:2px;}
+.proj-steps{display:flex;flex-direction:column;gap:7px;margin-top:14px;}
+.ps{display:flex;align-items:center;gap:9px;font-size:13px;}
+.ps .tck{width:18px;height:18px;}
+
+/* ══ ELIMINATION ZONE ══ */
+.elim-card{border-radius:16px;padding:18px;margin-bottom:10px;border:1px solid;}
+.elim-red{background:var(--rda);border-color:rgba(224,82,82,0.3);}
+.elim-yellow{background:var(--ora);border-color:rgba(239,136,69,0.25);}
+.elim-blue{background:var(--bla);border-color:rgba(91,154,245,0.2);}
+.elim-h{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.elim-icon{font-size:20px;}
+.elim-title{font-size:13px;font-weight:800;}
+.elim-sub{font-size:12px;color:var(--mu);margin-top:4px;line-height:1.5;}
+.elim-streak{font-size:11px;font-weight:700;margin-top:8px;}
+.elim-s-ok{color:var(--gn);}.elim-s-fail{color:var(--rd);}
+
+/* ══ GEMS LEVELS ══ */
+.gems-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.gem{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:16px;text-align:center;position:relative;overflow:hidden;transition:all 0.2s;}
+.gem.current{border-color:var(--go);box-shadow:0 0 24px rgba(200,164,74,0.15);}
+.gem.locked{opacity:0.35;}
+.gem-icon{font-size:30px;margin-bottom:8px;}
+.gem-name{font-size:12px;font-weight:800;margin-bottom:3px;}
+.gem-pts{font-size:11px;color:var(--mu);}
+.gem-badge{position:absolute;top:8px;right:8px;background:var(--go);color:#140f00;font-size:9px;padding:2px 6px;border-radius:5px;font-weight:800;}
+.seals{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+.seal{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;text-align:center;}
+.seal.on{border-color:var(--go);background:var(--ga);}
+.seal.off{opacity:0.3;}
+.seal-ic{font-size:22px;margin-bottom:5px;}
+.seal-n{font-size:11px;font-weight:700;}
+.seal-sub{font-size:10px;color:var(--mu);margin-top:2px;}
+
+/* ══ CHAT ══ */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 210px);}
+.chat-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;padding-bottom:16px;}
+.msg{display:flex;gap:10px;max-width:84%;}
+.msg.u{align-self:flex-end;flex-direction:row-reverse;}
+.msg-av{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.av-ai{background:var(--ga);}
+.av-u{background:var(--bla);}
+.msg-bub{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:12px 16px;font-size:13px;line-height:1.65;}
+.msg.u .msg-bub{background:rgba(91,154,245,0.09);border-color:rgba(91,154,245,0.18);}
+.chat-in{display:flex;gap:10px;padding-top:14px;border-top:1px solid var(--bd);}
+.chat-ta{flex:1;background:var(--s1);border:1px solid var(--bd);color:var(--t);padding:12px 16px;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;outline:none;resize:none;}
+.chat-ta:focus{border-color:var(--go);}
+.send-btn{background:linear-gradient(135deg,var(--go),var(--go2));color:#140f00;border:none;padding:12px 18px;border-radius:12px;cursor:pointer;font-size:15px;font-weight:800;}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--go);margin:0 2px;animation:bounce 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+
+/* ══ CRISIS MODE ══ */
+.crisis-banner{background:linear-gradient(135deg,rgba(155,127,232,0.15),rgba(200,164,74,0.08));border:1px solid rgba(155,127,232,0.4);border-radius:16px;padding:18px 22px;margin-bottom:20px;display:none;}
+.crisis-banner.show{display:flex;align-items:center;gap:14px;}
+.crisis-text h4{font-size:14px;font-weight:800;color:var(--pu);margin-bottom:4px;}
+.crisis-text p{font-size:12px;color:var(--mu);line-height:1.5;}
+
+/* ══ DIARY ══ */
+.diary-entry{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:10px;}
+.de-date{font-size:11px;color:var(--mu);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;}
+.de-text{font-size:13px;line-height:1.7;color:var(--t);}
+.de-feedback{background:var(--ga);border:1px solid rgba(200,164,74,0.2);border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12px;color:var(--go);line-height:1.6;font-style:italic;}
+
+/* ══ WEEKLY CHECK-IN ══ */
+.checkin-q{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:18px;margin-bottom:10px;}
+.cq-num{font-size:10px;color:var(--go);font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.cq-q{font-size:14px;font-weight:700;margin-bottom:12px;}
+.cq-opts{display:flex;flex-direction:column;gap:7px;}
+.cq-opt{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 14px;cursor:pointer;font-size:13px;font-family:'Syne',sans-serif;text-align:left;color:var(--mu);transition:all 0.2s;}
+.cq-opt:hover,.cq-opt.sel{background:var(--ga);border-color:var(--go);color:var(--go);}
+
+/* ══ FUTURE LETTER ══ */
+.letter-card{background:linear-gradient(135deg,rgba(200,164,74,0.06),rgba(155,127,232,0.04));border:1px solid rgba(200,164,74,0.2);border-radius:18px;padding:28px;}
+.letter-header{font-family:'Libre Baskerville',serif;font-size:18px;color:var(--go);margin-bottom:4px;}
+.letter-sub{font-size:12px;color:var(--mu);margin-bottom:20px;line-height:1.6;}
+.letter-ta{width:100%;background:var(--s2);border:1px solid var(--bd);color:var(--t);padding:16px;border-radius:12px;font-family:'Libre Baskerville',serif;font-size:14px;outline:none;resize:vertical;min-height:180px;line-height:1.8;}
+.letter-ta:focus{border-color:var(--go);}
+
+/* ══ ADMIN ══ */
+.admin-top-bar{background:var(--ga);border:1px solid rgba(200,164,74,0.25);border-radius:13px;padding:13px 18px;margin-bottom:22px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--go);font-weight:700;}
+.std-table{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;}
+.std-h{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:10px;padding:12px 18px;background:var(--s2);font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:0.8px;font-weight:700;}
+.std-r{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;gap:10px;padding:13px 18px;border-top:1px solid var(--bd);align-items:center;cursor:pointer;transition:background 0.15s;font-size:13px;}
+.std-r:hover{background:var(--s2);}
+.std-name{font-weight:700;}
+.std-status{font-size:11px;padding:3px 10px;border-radius:6px;font-weight:700;}
+.ss-ok{background:var(--gna);color:var(--gn);}
+.ss-w{background:var(--ora);color:var(--or);}
+.ss-r{background:var(--rda);color:var(--rd);}
+.ac{font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--rda);color:var(--rd);}
+
+/* ══ MODAL ══ */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:900;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--bd2);border-radius:20px;padding:28px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Libre Baskerville',serif;font-size:21px;color:var(--go);margin-bottom:18px;}
+.mbtns{display:flex;gap:10px;margin-top:20px;}
+.btn-cancel{background:var(--s2);border:1px solid var(--bd);color:var(--mu);padding:10px 18px;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;}
+.jfeedback{border-radius:11px;padding:14px;font-size:13px;margin-top:12px;line-height:1.6;display:none;}
+.jf-ok{background:var(--gna);border:1px solid rgba(57,184,116,0.3);}
+.jf-no{background:var(--rda);border:1px solid rgba(224,82,82,0.3);}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px;}
+
+/* ══ EXPORT REPORT ══ */
+.report-preview{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:24px;}
+.rp-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--bd);}
+.rp-title{font-family:'Libre Baskerville',serif;font-size:18px;color:var(--go);}
+.rp-date{font-size:11px;color:var(--mu);}
+.rp-student{font-size:15px;font-weight:800;margin-bottom:4px;}
+.rp-section{margin-bottom:16px;}
+.rp-section-title{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;}
+.rp-item{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--bd);}
+.rp-ok{color:var(--gn);}
+.rp-bad{color:var(--rd);}
+
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .areas,.gems-grid,.g4{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ MORNING RITUAL ════ -->
+<div id="ritual-overlay" style="display:none;">
+  <div class="ritual-card">
+    <div class="ritual-time" id="r-time">Segunda-feira, 27 de abril</div>
+    <div class="ritual-icon">🌅</div>
+    <div class="ritual-greeting">Bom dia, <span class="ritual-name" id="r-name">amigo</span>.</div>
+    <div class="ritual-verse">
+      <div id="r-verse">"Tudo posso naquele que me fortalece."</div>
+      <div class="ritual-ref" id="r-ref">Filipenses 4:13</div>
+    </div>
+    <div class="ritual-question"><em>Reflexão do dia:</em><br id="r-question"> O que você fará hoje que o seu eu futuro agradecerá?</div>
+    <div class="ritual-scores">
+      <div class="rs-item"><div class="rs-icon">🙏</div><div class="rs-val cy">78%</div><div class="rs-lbl">Espiritual</div></div>
+      <div class="rs-item"><div class="rs-icon">💰</div><div class="rs-val cy">55%</div><div class="rs-lbl">Financeiro</div></div>
+      <div class="rs-item"><div class="rs-icon">💪</div><div class="rs-val cy">62%</div><div class="rs-lbl">Saúde</div></div>
+      <div class="rs-item"><div class="rs-icon">👨‍👩‍👧</div><div class="rs-val cr">40%</div><div class="rs-lbl">Família</div></div>
+    </div>
+    <div class="ritual-priorities">
+      <div class="rp-item"><div class="rp-num">1</div><div class="rp-text">Fazer o devocional — está em alerta há 4 dias</div></div>
+      <div class="rp-item"><div class="rp-num">2</div><div class="rp-text">Pagar boleto fornecedor — vence hoje</div></div>
+      <div class="rp-item"><div class="rp-num">3</div><div class="rp-text">Ligar para sua mãe — 8 dias sem contato</div></div>
+    </div>
+    <button class="btn-start-day" onclick="closeRitual()">✦ Começar meu dia</button>
+  </div>
+</div>
+
+<!-- ════ LOGIN ════ -->
+<div id="login-screen">
+  <div class="login-bg-fx"></div>
+  <div class="login-card">
+    <div class="lc-logo">✦ Ecossistema de Vida</div>
+    <div class="lc-sub">Plataforma de vida equilibrada com IA · V3</div>
+    <div class="fg"><label>E-mail</label><input type="email" id="l-email" value="admin@mentoria.com"></div>
+    <div class="fg"><label>Senha</label><input type="password" id="l-pass" value="admin123"></div>
+    <button class="btn-primary" onclick="doLogin()">Entrar</button>
+    <div class="hint">Admin: <strong>admin@mentoria.com</strong> / <strong>admin123</strong><br>Aluno: <strong>joao@email.com</strong> / <strong>123456</strong></div>
+  </div>
+</div>
+
+<!-- ════ ONBOARDING ════ -->
+<div id="onboarding">
+  <div class="ob-wrap">
+    <div class="ob-card">
+      <div class="sbar">
+        <div class="sd on" id="sd1"></div><div class="sd" id="sd2"></div>
+        <div class="sd" id="sd3"></div><div class="sd" id="sd4"></div><div class="sd" id="sd5"></div>
+      </div>
+      <!-- Step 1 -->
+      <div class="ob-step active" id="os1">
+        <h2>✦ Vamos te conhecer</h2>
+        <p>Isso leva 4 minutos e personaliza tudo para a sua realidade.</p>
+        <div class="fg"><label>Nome completo</label><input id="ob-nome" placeholder="Seu nome completo"></div>
+        <div class="fg"><label>Estado civil</label>
+          <select id="ob-civil" onchange="civilChange()">
+            <option value="">Selecione...</option>
+            <option value="solteiro">Solteiro(a)</option>
+            <option value="casado">Casado(a)</option>
+            <option value="divorciado">Divorciado(a)</option>
+          </select>
+        </div>
+        <div class="fg" id="f-conjuge" style="display:none"><label>Nome do cônjuge</label><input id="ob-conjuge" placeholder="Nome"></div>
+        <div class="fg"><label>Tem filhos?</label>
+          <select id="ob-filhos" onchange="filhosChange()"><option value="nao">Não</option><option value="sim">Sim</option></select>
+        </div>
+        <div class="fg" id="f-filhos" style="display:none"><label>Nome e idade dos filhos</label><input id="ob-filhos-n" placeholder="Ex: Pedro (8), Ana (5)"></div>
+        <button class="btn-next" onclick="obGo(2)">Continuar →</button>
+      </div>
+      <!-- Step 2 -->
+      <div class="ob-step" id="os2">
+        <h2>👨‍👩‍👧 Família & Relacionamentos</h2>
+        <p>Vou usar os nomes reais para criar alertas personalizados para você.</p>
+        <div class="fg"><label>Nome da mãe</label><input id="ob-mae" placeholder="Nome da sua mãe"></div>
+        <div class="fg"><label>Nome do pai</label><input id="ob-pai" placeholder="Nome do seu pai"></div>
+        <div class="fg"><label>Pessoas próximas (amigos, irmãos, sócios...)</label>
+          <div class="people-list" id="plist">
+            <div class="person-row">
+              <input placeholder="Nome" class="pname"><select class="prel"><option>Amigo(a)</option><option>Irmão/Irmã</option><option>Sócio</option><option>Mentor</option><option>Outro</option></select>
+              <button class="rm-btn" onclick="rmRow(this)">×</button>
+            </div>
+          </div>
+          <button class="add-btn" onclick="addPerson()">+ Adicionar pessoa</button>
+        </div>
+        <button class="btn-next" onclick="obGo(3)">Continuar →</button>
+      </div>
+      <!-- Step 3 -->
+      <div class="ob-step" id="os3">
+        <h2>🙏 Vida Espiritual</h2>
+        <p>Seu acompanhamento espiritual será personalizado com base nessas respostas.</p>
+        <div class="fg"><label>Frequência na igreja</label>
+          <select id="ob-igreja"><option value="regular">Toda semana — sou comprometido</option><option value="irregular">Às vezes</option><option value="nao">Não frequento no momento</option></select>
+        </div>
+        <div class="fg"><label>O que já pratica diariamente</label>
+          <div class="cbs">
+            <label class="cb-item"><input type="checkbox" id="cb-bib"><span>📖 Leitura Bíblica</span></label>
+            <label class="cb-item"><input type="checkbox" id="cb-dev"><span>🕯️ Devocional</span></label>
+            <label class="cb-item"><input type="checkbox" id="cb-ora"><span>🙏 Oração</span></label>
+            <label class="cb-item"><input type="checkbox" id="cb-cel"><span>🏠 Célula/Grupo</span></label>
+          </div>
+        </div>
+        <button class="btn-next" onclick="obGo(4)">Continuar →</button>
+      </div>
+      <!-- Step 4 -->
+      <div class="ob-step" id="os4">
+        <h2>💪 Saúde & Hábitos</h2>
+        <p>Me fale sobre seus hábitos de saúde atuais.</p>
+        <div class="fg"><label>Exercício físico</label>
+          <select id="ob-ac"><option value="regular">Sim — 3x ou mais por semana</option><option value="irregular">Sim — às vezes (1-2x)</option><option value="nao">Não pratico no momento</option></select>
+        </div>
+        <div class="fg"><label>Horas de sono por noite</label>
+          <select id="ob-sono"><option>Menos de 5h</option><option>5-6h</option><option selected>7-8h</option><option>Mais de 8h</option></select>
+        </div>
+        <div class="fg"><label>Maior desafio hoje</label>
+          <select id="ob-des"><option>Disciplina e consistência</option><option>Equilíbrio entre áreas</option><option>Finanças desorganizadas</option><option>Tempo para família</option><option>Saúde e energia</option></select>
+        </div>
+        <div class="fg"><label>O que você quer ELIMINAR da sua vida?</label>
+          <input id="ob-elim" placeholder="Ex: Redes sociais em excesso, gastos impulsivos..."></div>
+        <button class="btn-next" onclick="obGo(5)">Continuar →</button>
+      </div>
+      <!-- Step 5 -->
+      <div class="ob-step" id="os5">
+        <h2>💰 Finanças & Empresa</h2>
+        <p>Configure seu módulo financeiro completo.</p>
+        <div class="fg"><label>Perfil financeiro</label>
+          <select id="ob-pf"><option value="pf">Pessoa Física (PF) apenas</option><option value="pj">Pessoa Jurídica (PJ) apenas</option><option value="ambos">Ambos — PF + PJ separados</option></select>
+        </div>
+        <div class="fg"><label>Nome da empresa (se aplicável)</label><input id="ob-emp" placeholder="Ex: João Silva MEI"></div>
+        <div class="fg"><label>Segmento do negócio</label>
+          <select id="ob-seg"><option>Serviços</option><option>Produtos</option><option>Educação/Mentoria</option><option>Saúde</option><option>Tecnologia</option><option>Outro</option></select>
+        </div>
+        <div class="fg"><label>Meta de faturamento mensal (R$)</label><input type="number" id="ob-meta" placeholder="Ex: 10000"></div>
+        <div class="fg"><label>Objetivo financeiro principal</label>
+          <select id="ob-obj"><option>Construir reserva de emergência</option><option>Quitar dívidas</option><option>Começar a investir</option><option>Escalar o faturamento</option></select>
+        </div>
+        <button class="btn-next" onclick="finishOb()">🚀 Criar meu Ecossistema!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ APP ════ -->
+<div id="app">
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-logo">✦ Ecossistema</div>
+        <div class="sb-tagline">de Vida · V3</div>
+      </div>
+      <div class="sb-user">
+        <div class="sb-av" id="sb-av">👤</div>
+        <div class="sb-info">
+          <div class="sb-name" id="sb-name">Usuário</div>
+          <div class="sb-lvl" id="sb-lvl">🔵 Safira</div>
+        </div>
+      </div>
+      <div class="sb-nav">
+        <div class="ns">Principal</div>
+        <button class="nb active" onclick="go('dashboard',this)"><span class="ni">🏠</span>Dashboard</button>
+        <button class="nb" onclick="go('ritual',this)"><span class="ni">🌅</span>Ritual da Manhã</button>
+        <button class="nb" onclick="go('agenda',this)"><span class="ni">📅</span>Agenda<span class="nbadge nb-red">3</span></button>
+        <button class="nb" onclick="go('tarefas',this)"><span class="ni">✅</span>Tarefas</button>
+        <button class="nb" onclick="go('alertas',this)"><span class="ni">🚨</span>Alertas<span class="nbadge nb-red" id="rbadge">2</span></button>
+        <div class="ns">Espiritual</div>
+        <button class="nb" onclick="go('espiritual',this)"><span class="ni">🙏</span>Espiritual</button>
+        <button class="nb" onclick="go('oracao',this)"><span class="ni">✝️</span>Pedidos de Oração</button>
+        <div class="ns">Saúde</div>
+        <button class="nb" onclick="go('saude',this)"><span class="ni">💪</span>Saúde & Academia</button>
+        <div class="ns">Financeiro</div>
+        <button class="nb" onclick="go('financas',this)"><span class="ni">💰</span>Finanças PF/PJ</button>
+        <div class="ns">Relacionamentos</div>
+        <button class="nb" onclick="go('familia',this)"><span class="ni">👨‍👩‍👧</span>Família & Amigos</button>
+        <div class="ns">Planejamento</div>
+        <button class="nb" onclick="go('projetos',this)"><span class="ni">🎯</span>Projetos Futuros</button>
+        <button class="nb" onclick="go('eliminacao',this)"><span class="ni">🚫</span>Zona de Eliminação</button>
+        <div class="ns">IA & Progresso</div>
+        <button class="nb" onclick="go('ia',this)"><span class="ni">🤖</span>Coach IA</button>
+        <button class="nb" onclick="go('diario',this)"><span class="ni">📓</span>Diário Reflexivo</button>
+        <button class="nb" onclick="go('checkin',this)"><span class="ni">📊</span>Check-in Semanal</button>
+        <button class="nb" onclick="go('carta',this)"><span class="ni">💌</span>Carta ao Futuro</button>
+        <button class="nb" onclick="go('conquistas',this)"><span class="ni">💎</span>Conquistas</button>
+        <div id="admin-nav" style="display:none">
+          <div class="ns">Admin</div>
+          <button class="nb" onclick="go('admin',this)"><span class="ni">👑</span>Painel Admin<span class="nbadge nb-gold">ADM</span></button>
+          <button class="nb" onclick="go('relatorio',this)"><span class="ni">📄</span>Relatório PDF</button>
+        </div>
+      </div>
+      <div class="sb-bottom"><button class="logout-btn" onclick="doLogout()">← Sair</button></div>
+    </aside>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="ph"><div><h2 id="d-greet">Bom dia! ✨</h2><p id="d-date"></p></div><div class="ha"><button class="btn-sm" onclick="go('checkin',null)">📊 Check-in</button><button class="btn-gold" onclick="go('ia',null)">🤖 Coach IA</button></div></div>
+        <div class="verse-box"><div class="vt" id="d-verse">"Tudo posso naquele que me fortalece."</div><div class="vr">Filipenses 4:13 · Palavra do dia</div></div>
+        <div id="d-rab" style="display:none">
+          <div class="rab"><div class="rab-icon">🚨</div><div class="rab-text"><h4>2 alertas vermelhos ativos!</h4><p>Atividades não realizadas aguardam justificativa. A IA irá avaliar a coerência.</p></div><button class="rab-btn" onclick="go('alertas',null)">Ver Alertas →</button></div>
+        </div>
+        <div class="st">Score das Áreas da Vida</div>
+        <div class="areas">
+          <div class="area" onclick="go('espiritual',null)"><div class="ai2">🙏</div><div class="an">Espiritual</div><div class="as2 cy">78%</div><div class="abar"><div class="af" style="width:78%;background:var(--pu)"></div></div></div>
+          <div class="area" onclick="go('financas',null)"><div class="ai2">💰</div><div class="an">Financeiro</div><div class="as2 cy">55%</div><div class="abar"><div class="af" style="width:55%;background:var(--go)"></div></div></div>
+          <div class="area" onclick="go('saude',null)"><div class="ai2">💪</div><div class="an">Saúde</div><div class="as2 cy">62%</div><div class="abar"><div class="af" style="width:62%;background:var(--gn)"></div></div></div>
+          <div class="area" onclick="go('familia',null)"><div class="ai2">👨‍👩‍👧</div><div class="an">Família</div><div class="as2 cr">40%</div><div class="abar"><div class="af" style="width:40%;background:var(--or)"></div></div></div>
+          <div class="area"><div class="ai2">📚</div><div class="an">Desenvolvimento</div><div class="as2 cg">70%</div><div class="abar"><div class="af" style="width:70%;background:var(--bl)"></div></div></div>
+          <div class="area"><div class="ai2">💼</div><div class="an">Trabalho</div><div class="as2 cg">80%</div><div class="abar"><div class="af" style="width:80%;background:var(--bl)"></div></div></div>
+          <div class="area"><div class="ai2">🧠</div><div class="an">Mental</div><div class="as2 cy">60%</div><div class="abar"><div class="af" style="width:60%;background:var(--pu)"></div></div></div>
+          <div class="area"><div class="ai2">🚫</div><div class="an">Eliminação</div><div class="as2 cy">65%</div><div class="abar"><div class="af" style="width:65%;background:var(--te)"></div></div></div>
+        </div>
+        <div class="g2">
+          <div>
+            <div class="st">Tarefas de Hoje</div>
+            <div class="tasks">
+              <div class="task"><div class="tck done"></div><div class="tlbl done">Leitura Bíblica</div><span class="ttag tsp">Espiritual</span></div>
+              <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Devocional diário</div><span class="ttag tsp">Espiritual</span></div>
+              <div class="task overdue"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Academia — Treino B</div><span class="ttag tur">⚠️ 3 dias</span></div>
+              <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Pagar boleto fornecedor</div><span class="ttag tfi">Financeiro</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="st">Financeiro do Mês</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div class="card"><div class="cl">💚 Entradas PF+PJ</div><div class="cv" style="color:var(--gn)">R$ 12.400</div></div>
+              <div class="card"><div class="cl">🔴 Saídas PF+PJ</div><div class="cv" style="color:var(--rd)">R$ 7.890</div></div>
+              <div class="card"><div class="cl">⭐ Saldo Total</div><div class="cv" style="color:var(--go)">R$ 4.510</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RITUAL PAGE -->
+      <div class="page" id="page-ritual">
+        <div class="ph"><div><h2>🌅 Ritual da Manhã</h2><p>Abra este módulo ao começar o dia</p></div><button class="btn-gold" onclick="showRitual()">▶ Iniciar Ritual</button></div>
+        <div class="verse-box"><div class="vt">"Este é o dia que o Senhor fez; regozijemo-nos e alegremo-nos nele."</div><div class="vr">Salmos 118:24</div></div>
+        <div class="st">Suas 3 Prioridades de Hoje</div>
+        <div class="tasks">
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Fazer o devocional — em alerta há 4 dias</div><span class="ttag tsp">Prioridade 1</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Pagar boleto fornecedor — vence hoje</div><span class="ttag tur">Prioridade 2</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Ligar para sua mãe — 8 dias sem contato</div><span class="ttag tfa">Prioridade 3</span></div>
+        </div>
+        <div class="st" style="margin-top:24px">Reflexão do Dia</div>
+        <div class="al gold"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">💭 <em>"O que você fará hoje que o seu eu futuro agradecerá?"</em></div><div class="al-meta">Reflita antes de começar o dia</div></div></div>
+      </div>
+
+      <!-- ALERTAS -->
+      <div class="page" id="page-alertas">
+        <div class="ph"><div><h2>🚨 Alertas</h2><p>Atividades pendentes que exigem ação</p></div></div>
+        <div class="st" style="color:var(--rd)">🔴 Alertas Vermelhos — Justificativa Obrigatória</div>
+        <div id="ral">
+          <div class="al red" id="ra1">
+            <div class="aldot dr"></div>
+            <div class="al-body"><div class="al-text"><strong>Academia</strong> — 3 dias consecutivos sem treinar (Ter, Qua, Qui). Isso não está alinhado com seu compromisso de vida equilibrada.</div><div class="al-meta">Ativo há 3 dias · Intensidade crescente · Mentor notificado</div></div>
+            <button class="btn-j" onclick="openJ('ra1','Academia — 3 dias sem treino')">Justificar</button>
+          </div>
+          <div class="al red" id="ra2">
+            <div class="aldot dr"></div>
+            <div class="al-body"><div class="al-text"><strong>Devocional</strong> — Nenhum registro esta semana (4 dias). Você definiu isso como prioridade essencial.</div><div class="al-meta">Ativo há 4 dias · Mentor notificado no relatório</div></div>
+            <button class="btn-j" onclick="openJ('ra2','Devocional — 4 dias sem registro')">Justificar</button>
+          </div>
+        </div>
+        <div class="st" style="margin-top:20px">🟠 Atenção</div>
+        <div class="al orange"><div class="aldot do2"></div><div class="al-body"><div class="al-text">📞 Faz 8 dias sem falar com sua mãe</div><div class="al-meta">Alerta de relacionamento</div></div></div>
+        <div class="al orange"><div class="aldot do2"></div><div class="al-body"><div class="al-text">💰 Boleto fornecedor vence hoje — R$ 800</div><div class="al-meta">Financeiro · urgente</div></div></div>
+        <div class="st" style="margin-top:20px">🔵 Informativo</div>
+        <div class="al blue"><div class="aldot db"></div><div class="al-body"><div class="al-text">📊 Relatório semanal enviado ao mentor domingo às 20h</div><div class="al-meta">Automático · inclui todos os alertas</div></div></div>
+        <div class="al blue"><div class="aldot db"></div><div class="al-body"><div class="al-text">🎂 Carlos faz aniversário em 3 dias — já tem presente?</div><div class="al-meta">Lembrete de relacionamento</div></div></div>
+      </div>
+
+      <!-- AGENDA -->
+      <div class="page" id="page-agenda">
+        <div class="ph"><div><h2>📅 Agenda</h2><p id="ag-dt">Hoje</p></div><button class="btn-gold" onclick="openM('m-ev')">+ Evento</button></div>
+        <div style="display:grid;grid-template-columns:72px 1fr;gap:0">
+          <div style="border-right:1px solid var(--bd)">
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">06:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">07:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">08:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">09:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">10:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">14:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">18:00</div>
+            <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">19:00</div>
+          </div>
+          <div>
+            <div style="height:60px;position:relative;border-bottom:1px solid rgba(255,255,255,0.02)"><div style="position:absolute;left:10px;right:10px;top:8px;height:44px;background:var(--pua);border-left:3px solid var(--pu);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--pu)">🙏 Oração + Devocional</div></div>
+            <div style="height:60px;border-bottom:1px solid rgba(255,255,255,0.02)"></div>
+            <div style="height:60px;position:relative;border-bottom:1px solid rgba(255,255,255,0.02)"><div style="position:absolute;left:10px;right:10px;top:8px;height:44px;background:var(--bla);border-left:3px solid var(--bl);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--bl)">💼 Reunião com cliente</div></div>
+            <div style="height:60px;border-bottom:1px solid rgba(255,255,255,0.02)"></div>
+            <div style="height:60px;border-bottom:1px solid rgba(255,255,255,0.02)"></div>
+            <div style="height:60px;position:relative;border-bottom:1px solid rgba(255,255,255,0.02)"><div style="position:absolute;left:10px;right:10px;top:8px;height:44px;background:var(--gna);border-left:3px solid var(--gn);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--gn)">🏋️ Academia</div></div>
+            <div style="height:60px;border-bottom:1px solid rgba(255,255,255,0.02)"></div>
+            <div style="height:120px;position:relative;border-bottom:1px solid rgba(255,255,255,0.02)"><div style="position:absolute;left:10px;right:10px;top:8px;height:104px;background:var(--pua);border-left:3px solid var(--pu);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;color:var(--pu)">⛪ Culto na Igreja</div></div>
+            <div style="height:60px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAREFAS -->
+      <div class="page" id="page-tarefas">
+        <div class="ph"><div><h2>✅ Tarefas</h2><p>Seus compromissos diários</p></div><button class="btn-gold" onclick="openM('m-task')">+ Tarefa</button></div>
+        <div class="st">Pendentes</div>
+        <div class="tasks">
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Devocional diário</div><span class="ttag tsp">Espiritual</span></div>
+          <div class="task overdue"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Academia — 3 dias em alerta vermelho</div><span class="ttag tur">⚠️ Alerta</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Pagar boleto fornecedor R$800</div><span class="ttag tfi">Financeiro</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Ligar para a mãe</div><span class="ttag tfa">Família</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Revisar metas do mês</div><span class="ttag two">Trabalho</span></div>
+        </div>
+        <div class="st" style="margin-top:22px">Concluídas Hoje</div>
+        <div class="tasks">
+          <div class="task"><div class="tck done"></div><div class="tlbl done">Leitura Bíblica — Salmos 91</div><span class="ttag tsp">Espiritual</span></div>
+          <div class="task"><div class="tck done"></div><div class="tlbl done">Tomar 2L de água</div><span class="ttag the">Saúde</span></div>
+        </div>
+      </div>
+
+      <!-- ESPIRITUAL -->
+      <div class="page" id="page-espiritual">
+        <div class="ph"><div><h2>🙏 Vida Espiritual</h2><p>Sua jornada de fé acompanhada com IA</p></div></div>
+        <div class="verse-box"><div class="vt">"Busca ao Senhor enquanto pode ser achado, chama por Ele enquanto está perto."</div><div class="vr">Isaías 55:6</div></div>
+        <div class="g3">
+          <div class="card"><div class="ci">📖</div><div class="cl">Streak Bíblico</div><div class="cv">18 dias</div><div class="csub">consecutivos</div><div class="bar"><div class="bf" style="width:72%;background:var(--pu)"></div></div></div>
+          <div class="card"><div class="ci">🕯️</div><div class="cl">Devocional</div><div class="cv cr">0 dias</div><div class="csub" style="color:var(--rd)">⚠️ Alerta vermelho</div><div class="bar"><div class="bf" style="width:3%;background:var(--rd)"></div></div></div>
+          <div class="card"><div class="ci">⛪</div><div class="cl">Igreja este mês</div><div class="cv">3x</div><div class="csub">meta: 4x/mês</div><div class="bar"><div class="bf" style="width:75%;background:var(--gn)"></div></div></div>
+        </div>
+        <div class="st">Check-in de Hoje</div>
+        <div class="tasks">
+          <div class="task"><div class="tck done"></div><div class="tlbl done">Leitura Bíblica</div><span class="ttag tsp">✓ Feito</span></div>
+          <div class="task overdue"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Devocional</div><span class="ttag tur">⚠️ 4 dias</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Oração da manhã</div><span class="ttag tsp">Pendente</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Culto — 19h</div><span class="ttag tsp">Hoje</span></div>
+        </div>
+      </div>
+
+      <!-- ORAÇÃO -->
+      <div class="page" id="page-oracao">
+        <div class="ph"><div><h2>✝️ Pedidos de Oração</h2><p>Seus pedidos e respostas</p></div><button class="btn-gold" onclick="openM('m-ora')">+ Pedido</button></div>
+        <div class="st">Pedidos Ativos</div>
+        <div class="pr"><div class="pr-dot pr-a"></div><div><div class="pr-t">Sabedoria para decisões no negócio</div><div class="pr-dt">Adicionado há 5 dias</div></div></div>
+        <div class="pr"><div class="pr-dot pr-a"></div><div><div class="pr-t">Saúde da minha mãe — cirurgia marcada</div><div class="pr-dt">Adicionado há 2 dias</div></div></div>
+        <div class="pr"><div class="pr-dot pr-a"></div><div><div class="pr-t">Restauração financeira e quitação das dívidas</div><div class="pr-dt">Adicionado há 10 dias</div></div></div>
+        <div class="st" style="margin-top:20px">Respostas 🎉</div>
+        <div class="pr"><div class="pr-dot pr-d"></div><div><div class="pr-t">Fechamento do contrato com cliente novo</div><div class="pr-dt">Respondido em 15/04/2026</div></div></div>
+        <div class="pr"><div class="pr-dot pr-d"></div><div><div class="pr-t">Paz e reconciliação familiar</div><div class="pr-dt">Respondido em 02/04/2026</div></div></div>
+      </div>
+
+      <!-- SAÚDE -->
+      <div class="page" id="page-saude">
+        <div class="ph"><div><h2>💪 Saúde & Academia</h2><p>Monitore seu bem-estar físico</p></div></div>
+        <div class="g3">
+          <div class="card"><div class="ci">🏋️</div><div class="cl">Treinos no mês</div><div class="cv">10x</div><div class="csub">meta: 16x/mês</div><div class="bar"><div class="bf" style="width:62%;background:var(--gn)"></div></div></div>
+          <div class="card"><div class="ci">💧</div><div class="cl">Água hoje</div><div class="cv">1,4L</div><div class="csub">meta: 2,5L</div><div class="bar"><div class="bf" style="width:56%;background:var(--bl)"></div></div></div>
+          <div class="card"><div class="ci">😴</div><div class="cl">Sono ontem</div><div class="cv">6,5h</div><div class="csub">meta: 7-8h</div><div class="bar"><div class="bf" style="width:65%;background:var(--pu)"></div></div></div>
+        </div>
+        <div class="al red" style="margin-bottom:20px">
+          <div class="aldot dr"></div>
+          <div class="al-body"><div class="al-text"><strong>3 dias sem academia</strong> — alerta vermelho ativo. Justificativa obrigatória para remover.</div><div class="al-meta">Mentor será notificado no relatório de domingo</div></div>
+          <button class="btn-j" onclick="openJ('ra1','Academia — 3 dias sem treino')">Justificar</button>
+        </div>
+        <div class="st">Check-in de Hoje</div>
+        <div class="tasks">
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Academia — Treino B</div><span class="ttag the">Pendente</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Beber 2,5L de água</div><span class="ttag the">Pendente</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Dormir antes das 23h</div><span class="ttag the">Noite</span></div>
+        </div>
+      </div>
+
+      <!-- FINANÇAS -->
+      <div class="page" id="page-financas">
+        <div class="ph"><div><h2>💰 Finanças PF / PJ</h2><p>Controle separado e integrado</p></div><button class="btn-gold" onclick="openM('m-tx')">+ Lançamento</button></div>
+        <div class="fin-tabs">
+          <button class="ftab active" onclick="ftab('pf',this)">👤 Pessoa Física</button>
+          <button class="ftab" onclick="ftab('pj',this)">🏢 Pessoa Jurídica</button>
+          <button class="ftab" onclick="ftab('g',this)">📊 Visão Geral</button>
+        </div>
+        <div id="fp-pf">
+          <div class="g3"><div class="card"><div class="cl">💚 Entradas PF</div><div class="cv" style="color:var(--gn)">R$ 4.200</div></div><div class="card"><div class="cl">🔴 Saídas PF</div><div class="cv" style="color:var(--rd)">R$ 3.100</div></div><div class="card"><div class="cl">⭐ Saldo PF</div><div class="cv" style="color:var(--go)">R$ 1.100</div></div></div>
+          <div class="al orange" style="margin-bottom:16px"><div class="aldot do2"></div><div class="al-body"><div class="al-text">Você gastou R$1.200 em restaurantes como PF — 29% do saldo pessoal. Isso compromete sua reserva de emergência.</div></div></div>
+          <div id="txs-pf">
+            <div class="tx"><div class="tx-ic ti">💰</div><div class="tx-info"><div class="tx-n">Salário</div><div class="tx-c">Receita PF · 01/04</div></div><div class="tx-v tvi">+R$ 4.200</div></div>
+            <div class="tx"><div class="tx-ic to">🍕</div><div class="tx-info"><div class="tx-n">Restaurante</div><div class="tx-c">Alimentação · 19/04</div></div><div class="tx-v tvo">-R$ 120</div></div>
+            <div class="tx"><div class="tx-ic to">⛽</div><div class="tx-info"><div class="tx-n">Combustível</div><div class="tx-c">Transporte · 18/04</div></div><div class="tx-v tvo">-R$ 180</div></div>
+          </div>
+        </div>
+        <div id="fp-pj" style="display:none">
+          <div class="g3"><div class="card"><div class="cl">💚 Faturamento PJ</div><div class="cv" style="color:var(--gn)">R$ 8.200</div></div><div class="card"><div class="cl">🔴 Despesas PJ</div><div class="cv" style="color:var(--rd)">R$ 4.790</div></div><div class="card"><div class="cl">⭐ Lucro PJ</div><div class="cv" style="color:var(--go)">R$ 3.410</div></div></div>
+          <div class="tx"><div class="tx-ic ti">💼</div><div class="tx-info"><div class="tx-n">Venda de serviço — Cliente A</div><div class="tx-c">Receita PJ · 20/04</div></div><div class="tx-v tvi">+R$ 3.500</div></div>
+          <div class="tx"><div class="tx-ic ti">📦</div><div class="tx-info"><div class="tx-n">Produto digital</div><div class="tx-c">Receita PJ · 18/04</div></div><div class="tx-v tvi">+R$ 1.200</div></div>
+          <div class="tx"><div class="tx-ic to">🏦</div><div class="tx-info"><div class="tx-n">Boleto Fornecedor</div><div class="tx-c">Fornecedores · vence hoje</div></div><div class="tx-v tvo">-R$ 800</div></div>
+          <div class="tx"><div class="tx-ic to">📢</div><div class="tx-info"><div class="tx-n">Google Ads</div><div class="tx-c">Marketing PJ · 15/04</div></div><div class="tx-v tvo">-R$ 600</div></div>
+        </div>
+        <div id="fp-g" style="display:none">
+          <div class="g3"><div class="card"><div class="cl">💚 Total Entradas</div><div class="cv" style="color:var(--gn)">R$ 12.400</div><div class="csub">PF R$4.200 + PJ R$8.200</div></div><div class="card"><div class="cl">🔴 Total Saídas</div><div class="cv" style="color:var(--rd)">R$ 7.890</div><div class="csub">PF R$3.100 + PJ R$4.790</div></div><div class="card"><div class="cl">⭐ Saldo Geral</div><div class="cv" style="color:var(--go)">R$ 4.510</div><div class="csub">PF R$1.100 + PJ R$3.410</div></div></div>
+          <div class="al green"><div class="aldot dg"></div><div class="al-body"><div class="al-text">✅ PF e PJ separados corretamente! Continue assim para evitar o erro mais comum dos empreendedores.</div></div></div>
+        </div>
+      </div>
+
+      <!-- FAMÍLIA -->
+      <div class="page" id="page-familia">
+        <div class="ph"><div><h2>👨‍👩‍👧 Família & Amigos</h2><p>Seus relacionamentos monitorados com IA</p></div></div>
+        <div class="al red" style="margin-bottom:8px"><div class="aldot dr"></div><div class="al-body"><div class="al-text">📞 Faz 8 dias sem falar com sua <strong id="n-mae">mãe</strong>. Esse comportamento não está alinhado com suas prioridades.</div><div class="al-meta">Alertas crescem a cada 3 dias sem ação</div></div><button class="btn-j" onclick="openJ('rel-mae','Contato com a mãe — 8 dias')">Justificar</button></div>
+        <div class="al orange" style="margin-bottom:8px"><div class="aldot do2"></div><div class="al-body"><div class="al-text">💌 Não enviou mensagem especial ao cônjuge nos últimos 3 dias</div></div></div>
+        <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">🎂 Carlos faz aniversário em 3 dias</div></div></div>
+        <div class="st">Ações de Relacionamento</div>
+        <div class="tasks">
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Ligar para a mãe hoje</div><span class="ttag tfa">Família</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Mensagem especial para cônjuge</div><span class="ttag tfa">Família</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Planejar presente — Carlos</div><span class="ttag tfa">Amigos</span></div>
+          <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Visitar pai este fim de semana</div><span class="ttag tfa">Família</span></div>
+        </div>
+      </div>
+
+      <!-- PROJETOS -->
+      <div class="page" id="page-projetos">
+        <div class="ph"><div><h2>🎯 Projetos Futuros</h2><p>Seus sonhos com plano de ação estruturado</p></div><button class="btn-gold" onclick="openM('m-proj')">+ Projeto</button></div>
+        <div class="proj"><div class="proj-h"><div><div class="proj-title">🏢 Abrir empresa (PJ formal)</div><div class="proj-dl">Meta: Julho 2026</div></div><span style="color:var(--go);font-size:13px;font-weight:800">60%</span></div><div class="bar"><div class="bf" style="width:60%;background:var(--go)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Pesquisar tipo de empresa</span></div><div class="ps"><div class="tck done"></div><span>Abrir conta PJ no banco</span></div><div class="ps"><div class="tck done"></div><span>Consultar contador</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Registrar CNPJ</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Emitir primeira NF</span></div></div></div>
+        <div class="proj"><div class="proj-h"><div><div class="proj-title">🏠 Comprar imóvel próprio</div><div class="proj-dl">Meta: Dezembro 2027</div></div><span style="color:var(--bl);font-size:13px;font-weight:800">25%</span></div><div class="bar"><div class="bf" style="width:25%;background:var(--bl)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Definir valor de entrada</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Criar poupança dedicada</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Pesquisar regiões e preços</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Simulação de financiamento</span></div></div></div>
+        <div class="proj"><div class="proj-h"><div><div class="proj-title">📚 Lançar mentoria própria</div><div class="proj-dl">Meta: Setembro 2026</div></div><span style="color:var(--pu);font-size:13px;font-weight:800">40%</span></div><div class="bar"><div class="bf" style="width:40%;background:var(--pu)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Definir nicho e público</span></div><div class="ps"><div class="tck done"></div><span>Criar estrutura do programa</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Montar página de vendas</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Gravar conteúdo base</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Lançamento lista VIP</span></div></div></div>
+      </div>
+
+      <!-- ZONA DE ELIMINAÇÃO -->
+      <div class="page" id="page-eliminacao">
+        <div class="ph"><div><h2>🚫 Zona de Eliminação</h2><p>O que você precisa parar, reduzir ou delegar</p></div><button class="btn-gold" onclick="openM('m-elim')">+ Adicionar</button></div>
+        <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">💡 Crescimento não é só adicionar coisas boas — é também remover as que drenam energia e foco.</div></div></div>
+        <div class="st" style="color:var(--rd)">🔴 Eliminar — Para de vez</div>
+        <div class="elim-card elim-red"><div class="elim-h"><div class="elim-icon">📱</div><div class="elim-title">Rolagem de feed sem propósito</div></div><div class="elim-sub">Passa +2h/dia rolando redes sociais sem objetivo. Esse tempo poderia ir para devocional, academia ou família.</div><div class="elim-streak elim-s-ok">✅ 3 dias sem fazer isso</div></div>
+        <div class="elim-card elim-red"><div class="elim-h"><div class="elim-icon">🌙</div><div class="elim-title">Séries até de madrugada</div></div><div class="elim-sub">Dormir tarde impacta diretamente sua energia, humor e produtividade no dia seguinte.</div><div class="elim-streak elim-s-fail">⚠️ Ontem dormiu às 01:30 — alerta ativo</div></div>
+        <div class="st" style="color:var(--or)">🟡 Reduzir — Colocar limite</div>
+        <div class="elim-card elim-yellow"><div class="elim-h"><div class="elim-icon">💬</div><div class="elim-title">WhatsApp fora de horário</div></div><div class="elim-sub">Meta: responder apenas às 8h, 12h e 18h. Notificações constantes quebram foco e geram ansiedade.</div><div class="elim-streak elim-s-ok">✅ Cumprindo — 5 dias no ritmo</div></div>
+        <div class="elim-card elim-yellow"><div class="elim-h"><div class="elim-icon">🤝</div><div class="elim-title">Reuniões sem pauta definida</div></div><div class="elim-sub">Meta: só aceitar reuniões com pauta prévia e tempo definido. Você perdeu 6h esse mês em reuniões sem resultado.</div><div class="elim-streak elim-s-fail">⚠️ Aceitou 2 reuniões sem pauta essa semana</div></div>
+        <div class="st" style="color:var(--bl)">🔵 Delegar — Tira da sua mão</div>
+        <div class="elim-card elim-blue"><div class="elim-h"><div class="elim-icon">📋</div><div class="elim-title">Tarefas administrativas repetitivas</div></div><div class="elim-sub">Emissão de NF, controle de planilha, agendamentos — podem ser delegados ou automatizados.</div><div class="elim-streak" style="color:var(--bl)">💡 Pendente — ainda não delegado</div></div>
+        <div class="st" style="margin-top:24px">Índice de Foco da Semana</div>
+        <div class="card"><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;font-weight:700">Dias livre das distrações</span><span style="color:var(--go);font-weight:800">5/7 dias</span></div><div class="bar" style="height:6px"><div class="bf" style="width:71%;background:linear-gradient(90deg,var(--go),var(--go2))"></div></div><div class="csub" style="margin-top:8px">Manter isso garante +15 pontos/semana na gamificação 🎯</div></div>
+      </div>
+
+      <!-- IA COACH -->
+      <div class="page" id="page-ia">
+        <div class="ph"><div><h2>🤖 Coach IA</h2><p>Treinado para te desafiar, acolher e orientar</p></div></div>
+        <div class="crisis-banner" id="crisis-banner">
+          <div style="font-size:28px">💜</div>
+          <div class="crisis-text"><h4>Modo Acolhimento Ativo</h4><p>Percebi que você pode estar passando por um momento difícil. Estou aqui. Seu mentor também foi notificado com carinho.</p></div>
+        </div>
+        <div class="chat-wrap">
+          <div class="chat-msgs" id="chat-msgs">
+            <div class="msg"><div class="msg-av av-ai">✦</div><div class="msg-bub">Olá! Sou seu Coach de Vida — uma IA treinada para te acompanhar em equilíbrio em todas as áreas da vida.<br><br>Hoje você tem <strong>2 alertas vermelhos ativos</strong> e sua área de família está em risco (40%). Quer conversar sobre isso?</div></div>
+          </div>
+          <div class="chat-in">
+            <textarea class="chat-ta" id="chat-ta" placeholder="Converse com seu Coach..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"></textarea>
+            <button class="send-btn" onclick="sendMsg()">↑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIÁRIO REFLEXIVO -->
+      <div class="page" id="page-diario">
+        <div class="ph"><div><h2>📓 Diário Reflexivo</h2><p>Escreva seu dia — a IA lê e responde</p></div><button class="btn-gold" onclick="openM('m-diario')">+ Novo Registro</button></div>
+        <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">✍️ Escreva como foi seu dia em 3 linhas. A IA vai identificar padrões e te dar uma devolução personalizada.</div></div></div>
+        <div class="diary-entry">
+          <div class="de-date">Sexta-feira, 25 de Abril de 2026</div>
+          <div class="de-text">Hoje foi corrido. Tive 3 reuniões de manhã e não consegui fazer o devocional. À tarde fui produtivo mas perdi a academia de novo. À noite me senti culpado mas assisti série até tarde.</div>
+          <div class="de-feedback">✦ IA: Percebi um padrão nas últimas entradas — reuniões de manhã têm "roubado" seu tempo espiritual. E a academia vira vítima do cansaço acumulado. O que aconteceria se o devocional viesse ANTES das reuniões, às 6h? Uma pequena mudança de ordem pode mudar tudo.</div>
+        </div>
+        <div class="diary-entry">
+          <div class="de-date">Quinta-feira, 24 de Abril de 2026</div>
+          <div class="de-text">Dia ok. Fiz a leitura bíblica mas esqueci o devocional de novo. Falei com um cliente novo, parece promissor. Não liguei para minha mãe ainda.</div>
+          <div class="de-feedback">✦ IA: Você mencionou sua mãe pela segunda vez esta semana sem ligar para ela. Isso parece te pesar. Que tal transformar isso em uma tarefa com horário fixo? Às 19h30, antes do jantar?</div>
+        </div>
+      </div>
+
+      <!-- CHECK-IN SEMANAL -->
+      <div class="page" id="page-checkin">
+        <div class="ph"><div><h2>📊 Check-in Semanal</h2><p>5 perguntas — gera seu relatório automaticamente</p></div></div>
+        <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">Faça esse check-in todo domingo. Suas respostas geram o relatório que seu mentor receberá automaticamente.</div></div></div>
+        <div class="checkin-q">
+          <div class="cq-num">Pergunta 1 de 5</div>
+          <div class="cq-q">Como foi sua vida espiritual esta semana?</div>
+          <div class="cq-opts">
+            <button class="cq-opt" onclick="selOpt(this)">🔥 Excelente — fiz tudo que me propus</button>
+            <button class="cq-opt" onclick="selOpt(this)">✅ Boa — fiz a maior parte</button>
+            <button class="cq-opt" onclick="selOpt(this)">⚠️ Regular — fiz pouco</button>
+            <button class="cq-opt sel" onclick="selOpt(this)">❌ Fraca — não cumpri quase nada</button>
+          </div>
+        </div>
+        <div class="checkin-q">
+          <div class="cq-num">Pergunta 2 de 5</div>
+          <div class="cq-q">Como foram suas finanças esta semana?</div>
+          <div class="cq-opts">
+            <button class="cq-opt" onclick="selOpt(this)">🔥 Controlei tudo, dentro do planejado</button>
+            <button class="cq-opt sel" onclick="selOpt(this)">✅ Tive alguns gastos extras mas controlei</button>
+            <button class="cq-opt" onclick="selOpt(this)">⚠️ Gastei mais do que devia</button>
+            <button class="cq-opt" onclick="selOpt(this)">❌ Semana financeiramente caótica</button>
+          </div>
+        </div>
+        <div class="checkin-q">
+          <div class="cq-num">Pergunta 3 de 5</div>
+          <div class="cq-q">Como foi sua saúde e academia?</div>
+          <div class="cq-opts">
+            <button class="cq-opt" onclick="selOpt(this)">🔥 Treinei todos os dias planejados</button>
+            <button class="cq-opt" onclick="selOpt(this)">✅ Treinei a maior parte</button>
+            <button class="cq-opt sel" onclick="selOpt(this)">⚠️ Faltei mais do que devia</button>
+            <button class="cq-opt" onclick="selOpt(this)">❌ Não fui nenhuma vez</button>
+          </div>
+        </div>
+        <div class="checkin-q">
+          <div class="cq-num">Pergunta 4 de 5</div>
+          <div class="cq-q">Qual foi o maior desafio da semana?</div>
+          <div class="fg"><textarea id="ci-desafio" rows="3" placeholder="Escreva livremente..."></textarea></div>
+        </div>
+        <div class="checkin-q">
+          <div class="cq-num">Pergunta 5 de 5</div>
+          <div class="cq-q">O que você vai fazer diferente na próxima semana?</div>
+          <div class="fg"><textarea id="ci-prox" rows="3" placeholder="Seu compromisso para a próxima semana..."></textarea></div>
+        </div>
+        <button class="btn-primary" onclick="submitCheckin()">✓ Enviar Check-in — Gerar Relatório</button>
+      </div>
+
+      <!-- CARTA AO FUTURO -->
+      <div class="page" id="page-carta">
+        <div class="ph"><div><h2>💌 Carta ao Futuro</h2><p>Escreva para si mesmo — recebe em 6 meses</p></div></div>
+        <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">✦ Escreva uma carta para você mesmo hoje. O sistema enviará automaticamente em <strong>27 de outubro de 2026</strong>. A IA comparará com o que realmente aconteceu no app.</div></div></div>
+        <div class="letter-card">
+          <div class="letter-header">Querido eu do futuro,</div>
+          <div class="letter-sub">Hoje é 27 de abril de 2026. Escreva como você está, o que quer alcançar e o que espera de si mesmo daqui a 6 meses.</div>
+          <textarea class="letter-ta" id="carta-text" placeholder="Hoje eu estou...&#10;&#10;Daqui a 6 meses quero...&#10;&#10;Meu compromisso com você é...&#10;&#10;O que me dá mais medo hoje é...&#10;&#10;O que me dá mais esperança é..."></textarea>
+          <div style="margin-top:14px;display:flex;gap:10px;">
+            <button class="btn-primary" style="max-width:300px" onclick="saveCarta()">💌 Selar e enviar em outubro</button>
+          </div>
+        </div>
+        <div class="st" style="margin-top:24px">Carta Anterior Recebida 📬</div>
+        <div class="diary-entry">
+          <div class="de-date">Recebida em 27 de outubro de 2025 — escrita em abril de 2025</div>
+          <div class="de-text">"Querido eu futuro, hoje estou com medo de não conseguir organizar minhas finanças. Espero que daqui a 6 meses você já tenha separado PF de PJ e esteja com reserva de emergência."</div>
+          <div class="de-feedback">✦ IA: Você pediu separação PF/PJ e hoje você já faz isso! Reserva de emergência ainda está em construção (R$ 1.100 PF). Você evoluiu, mas ainda tem caminho. Seu eu do passado ficaria orgulhoso do progresso. Continue. 💪</div>
+        </div>
+      </div>
+
+      <!-- CONQUISTAS -->
+      <div class="page" id="page-conquistas">
+        <div class="ph"><div><h2>💎 Conquistas & Níveis</h2><p>Sua jornada de crescimento em pedras preciosas</p></div></div>
+        <div class="st">Seu Nível Atual</div>
+        <div class="gems-grid">
+          <div class="gem locked"><div class="gem-icon">🪨</div><div class="gem-name">Pedra Bruta</div><div class="gem-pts">0–99 pts</div></div>
+          <div class="gem current"><div class="gem-badge">VOCÊ</div><div class="gem-icon">🔵</div><div class="gem-name" style="color:#4a9fd4">Safira</div><div class="gem-pts">100–299 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">💚</div><div class="gem-name" style="color:var(--gn)">Esmeralda</div><div class="gem-pts">300–599 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">❤️</div><div class="gem-name" style="color:var(--rd)">Rubi</div><div class="gem-pts">600–999 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">💜</div><div class="gem-name" style="color:var(--pu)">Ametista</div><div class="gem-pts">1.000–1.499 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">🔷</div><div class="gem-name" style="color:#1a9fd4">Blue Diamond</div><div class="gem-pts">1.500–2.499 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">💎</div><div class="gem-name" style="color:#b8c8e8">Diamond</div><div class="gem-pts">2.500–4.999 pts</div></div>
+          <div class="gem locked"><div class="gem-icon">🖤</div><div class="gem-name" style="color:#8a8aaa">Black Diamond</div><div class="gem-pts">5.000+ pts</div></div>
+        </div>
+        <div class="card" style="margin-bottom:24px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="font-size:13px;font-weight:700">Progresso → Esmeralda</span><span style="color:var(--go);font-weight:800">187 / 300 pts</span></div>
+          <div class="bar" style="height:6px"><div class="bf" style="width:62%;background:linear-gradient(90deg,var(--go),var(--go2))"></div></div>
+          <div class="csub" style="margin-top:8px">Faltam 113 pontos · Próximo nível em ~3 semanas no ritmo atual</div>
+        </div>
+        <div class="st">Selos Conquistados</div>
+        <div class="seals">
+          <div class="seal on"><div class="seal-ic">📖</div><div class="seal-n">Leitor Fiel</div><div class="seal-sub">18 dias bíblia</div></div>
+          <div class="seal on"><div class="seal-ic">💰</div><div class="seal-n">PF/PJ Separados</div><div class="seal-sub">organizado</div></div>
+          <div class="seal on"><div class="seal-ic">🎯</div><div class="seal-n">Planejador</div><div class="seal-sub">1° projeto</div></div>
+          <div class="seal on"><div class="seal-ic">🚫</div><div class="seal-n">Em Controle</div><div class="seal-sub">3 dias sem distração</div></div>
+          <div class="seal off"><div class="seal-ic">🏋️</div><div class="seal-n">Atleta</div><div class="seal-sub">30 dias treino</div></div>
+          <div class="seal off"><div class="seal-ic">💌</div><div class="seal-n">Memorialista</div><div class="seal-sub">Carta ao futuro</div></div>
+          <div class="seal off"><div class="seal-ic">📓</div><div class="seal-n">Reflexivo</div><div class="seal-sub">30 dias diário</div></div>
+          <div class="seal off"><div class="seal-ic">💎</div><div class="seal-n">Diamond</div><div class="seal-sub">todas áreas 80%</div></div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="page" id="page-admin">
+        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos</p></div><button class="btn-gold" onclick="go('relatorio',null)">📄 Relatório PDF</button></div>
+        <div class="admin-top-bar">👑 Modo Admin — Acesso total a todos os alunos da mentoria</div>
+        <div class="g4" style="margin-bottom:22px">
+          <div class="card"><div class="cl">Total Alunos</div><div class="cv">12</div></div>
+          <div class="card"><div class="cl">Em Risco 🔴</div><div class="cv" style="color:var(--rd)">3</div></div>
+          <div class="card"><div class="cl">Atenção 🟠</div><div class="cv" style="color:var(--or)">4</div></div>
+          <div class="card"><div class="cl">No Rumo ✅</div><div class="cv" style="color:var(--gn)">5</div></div>
+        </div>
+        <div class="std-table">
+          <div class="std-h"><div>Aluno</div><div>Nível</div><div>Score</div><div>Alertas</div><div>Relatório</div><div>Status</div></div>
+          <div class="std-r"><div class="std-name">João Silva</div><div>🔵 Safira</div><div style="color:var(--go);font-weight:800">61%</div><div><span class="ac">2 🔴</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-w">Atenção</span></div></div>
+          <div class="std-r"><div class="std-name">Maria Oliveira</div><div>💚 Esmeralda</div><div style="color:var(--gn);font-weight:800">78%</div><div><span class="ac" style="background:var(--gna);color:var(--gn)">0</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-ok">No Rumo</span></div></div>
+          <div class="std-r"><div class="std-name">Carlos Mendes</div><div>🪨 Pedra Bruta</div><div style="color:var(--rd);font-weight:800">32%</div><div><span class="ac">4 🔴</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-r">Risco</span></div></div>
+          <div class="std-r"><div class="std-name">Ana Costa</div><div>❤️ Rubi</div><div style="color:var(--gn);font-weight:800">85%</div><div><span class="ac" style="background:var(--gna);color:var(--gn)">0</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-ok">No Rumo</span></div></div>
+          <div class="std-r"><div class="std-name">Roberto Alves</div><div>🔵 Safira</div><div style="color:var(--rd);font-weight:800">41%</div><div><span class="ac">3 🔴</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-r">Risco</span></div></div>
+          <div class="std-r"><div class="std-name">Patrícia Lima</div><div>💚 Esmeralda</div><div style="color:var(--go);font-weight:800">72%</div><div><span class="ac">1 🟠</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-w">Atenção</span></div></div>
+        </div>
+      </div>
+
+      <!-- RELATÓRIO PDF -->
+      <div class="page" id="page-relatorio">
+        <div class="ph"><div><h2>📄 Relatório Pré-Sessão</h2><p>Gerado automaticamente para cada aluno</p></div><button class="btn-gold" onclick="alert('Exportando PDF... Em produção isso geraria um PDF real!')">⬇ Exportar PDF</button></div>
+        <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">Este relatório é gerado automaticamente antes de cada sessão de mentoria. Você chega preparado sem precisar perguntar nada.</div></div></div>
+        <div class="report-preview">
+          <div class="rp-header"><div><div class="rp-title">✦ Relatório Pré-Sessão</div><div style="font-size:12px;color:var(--mu);margin-top:3px">Semana 17 · 21–27 de Abril de 2026</div></div><div style="text-align:right"><div class="rp-student">João Silva</div><div style="font-size:11px;color:var(--mu)">🔵 Safira · 187 pts</div></div></div>
+          <div class="rp-section"><div class="rp-section-title">Score por Área</div>
+            <div class="rp-item"><span>🙏 Espiritual</span><span class="rp-ok">78% ↑</span></div>
+            <div class="rp-item"><span>💰 Financeiro</span><span style="color:var(--go)">55% →</span></div>
+            <div class="rp-item"><span>💪 Saúde</span><span class="rp-bad">62% ↓</span></div>
+            <div class="rp-item"><span>👨‍👩‍👧 Família</span><span class="rp-bad">40% ↓↓</span></div>
+            <div class="rp-item"><span>🚫 Eliminação</span><span style="color:var(--go)">65% →</span></div>
+          </div>
+          <div class="rp-section"><div class="rp-section-title">Alertas Ativos</div>
+            <div class="rp-item"><span>Academia — 3 dias sem treinar</span><span class="rp-bad">🔴 Vermelho</span></div>
+            <div class="rp-item"><span>Devocional — 4 dias sem registro</span><span class="rp-bad">🔴 Vermelho</span></div>
+            <div class="rp-item"><span>Mãe — 8 dias sem contato</span><span style="color:var(--or)">🟠 Atenção</span></div>
+          </div>
+          <div class="rp-section"><div class="rp-section-title">Projetos em Andamento</div>
+            <div class="rp-item"><span>Abrir empresa (PJ)</span><span style="color:var(--go)">60%</span></div>
+            <div class="rp-item"><span>Comprar imóvel</span><span style="color:var(--go)">25%</span></div>
+            <div class="rp-item"><span>Lançar mentoria</span><span style="color:var(--go)">40%</span></div>
+          </div>
+          <div class="rp-section"><div class="rp-section-title">Check-in Semanal</div>
+            <div class="rp-item"><span>Espiritual</span><span class="rp-bad">Fraca — não cumpriu quase nada</span></div>
+            <div class="rp-item"><span>Finanças</span><span style="color:var(--go)">Alguns gastos extras mas controlou</span></div>
+            <div class="rp-item"><span>Saúde</span><span class="rp-bad">Faltou mais do que devia</span></div>
+          </div>
+          <div class="rp-section"><div class="rp-section-title">Sugestão para a Sessão</div>
+            <div style="background:var(--ga);border-radius:10px;padding:12px;font-size:13px;line-height:1.6;color:var(--t)">Foque em: (1) Por que academia e devocional estão em queda simultânea — possível esgotamento ou desorganização de manhã. (2) Família em 40% é sinal de alerta — explorar relação com mãe. (3) Celebrar: separação PF/PJ funcionando bem.</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-ov" id="m-ev"><div class="modal"><h3>📅 Novo Evento</h3><div class="fg"><label>Título</label><input placeholder="Ex: Reunião com cliente"></div><div class="fg"><label>Data e Hora</label><input type="datetime-local"></div><div class="fg"><label>Categoria</label><select><option>🙏 Espiritual</option><option>💼 Trabalho</option><option>💪 Saúde</option><option>👨‍👩‍👧 Família</option></select></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-ev')">Cancelar</button><button class="btn-gold" onclick="closeM('m-ev')">Salvar</button></div></div></div>
+<div class="modal-ov" id="m-task"><div class="modal"><h3>✅ Nova Tarefa</h3><div class="fg"><label>Tarefa</label><input placeholder="Descreva..."></div><div class="fg"><label>Prioridade</label><select><option>🔴 Urgente</option><option>🟡 Importante</option><option>🟢 Pode esperar</option></select></div><div class="fg"><label>Categoria</label><select><option>🙏 Espiritual</option><option>💰 Financeiro</option><option>💪 Saúde</option><option>👨‍👩‍👧 Família</option><option>💼 Trabalho</option></select></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-task')">Cancelar</button><button class="btn-gold" onclick="closeM('m-task')">Salvar</button></div></div></div>
+<div class="modal-ov" id="m-tx"><div class="modal"><h3>💰 Novo Lançamento</h3><div class="fg"><label>Perfil</label><select id="tx-p"><option value="pf">👤 Pessoa Física (PF)</option><option value="pj">🏢 Pessoa Jurídica (PJ)</option></select></div><div class="fg"><label>Tipo</label><select id="tx-t"><option value="in">💚 Entrada</option><option value="out">🔴 Saída</option></select></div><div class="fg"><label>Descrição</label><input id="tx-d" placeholder="Ex: Venda de serviço"></div><div class="fg"><label>Valor (R$)</label><input type="number" id="tx-v" placeholder="0,00"></div><div class="fg"><label>Categoria</label><select><option>Receita</option><option>Alimentação</option><option>Fornecedores</option><option>Marketing</option><option>Transporte</option><option>Pessoal</option></select></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-tx')">Cancelar</button><button class="btn-gold" onclick="addTx()">Salvar</button></div></div></div>
+<div class="modal-ov" id="m-ora"><div class="modal"><h3>🙏 Novo Pedido de Oração</h3><div class="fg"><label>Pedido</label><textarea rows="3" placeholder="Descreva seu pedido..."></textarea></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-ora')">Cancelar</button><button class="btn-gold" onclick="closeM('m-ora')">Salvar</button></div></div></div>
+<div class="modal-ov" id="m-proj"><div class="modal"><h3>🎯 Novo Projeto</h3><div class="fg"><label>Nome do Projeto</label><input placeholder="Ex: Abrir empresa"></div><div class="fg"><label>Prazo</label><input type="month"></div><div class="fg"><label>Primeiro passo</label><input placeholder="Ex: Pesquisar tipo de empresa"></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-proj')">Cancelar</button><button class="btn-gold" onclick="closeM('m-proj')">Criar Projeto</button></div></div></div>
+<div class="modal-ov" id="m-elim"><div class="modal"><h3>🚫 Nova Eliminação</h3><div class="fg"><label>O que eliminar/reduzir/delegar</label><input placeholder="Ex: Redes sociais em excesso"></div><div class="fg"><label>Categoria</label><select><option>🔴 Eliminar — para de vez</option><option>🟡 Reduzir — colocar limite</option><option>🔵 Delegar — tira da sua mão</option></select></div><div class="fg"><label>Por que isso te prejudica?</label><textarea rows="2" placeholder="Explique o impacto negativo..."></textarea></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-elim')">Cancelar</button><button class="btn-gold" onclick="closeM('m-elim')">Salvar</button></div></div></div>
+<div class="modal-ov" id="m-diario"><div class="modal"><h3>📓 Registro do Dia</h3><div class="fg"><label>Como foi seu dia?</label><textarea id="diario-text" rows="5" placeholder="Escreva livremente — a IA vai ler e responder com uma devolução personalizada..."></textarea></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-diario')">Cancelar</button><button class="btn-gold" onclick="saveDiario()">Salvar — IA vai analisar</button></div></div></div>
+
+<!-- JUSTIFY MODAL -->
+<div class="modal-ov" id="m-justify">
+  <div class="modal">
+    <h3>🔴 Justificar Alerta</h3>
+    <div style="background:var(--rda);border:1px solid rgba(224,82,82,0.3);border-radius:11px;padding:14px;margin-bottom:16px;font-size:13px;line-height:1.5;" id="j-ctx">Alerta ativo</div>
+    <div class="fg"><label>Sua Justificativa</label><textarea id="j-text" rows="4" placeholder="Explique o motivo com sinceridade. A IA avaliará se é coerente e aceitável..."></textarea></div>
+    <div class="jfeedback" id="j-fb"></div>
+    <div class="mbtns">
+      <button class="btn-cancel" onclick="closeM('m-justify')">Cancelar</button>
+      <button class="btn-gold" id="j-btn" onclick="submitJ()">Enviar para IA avaliar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───
+const USERS={
+  'admin@mentoria.com':{pass:'admin123',name:'Admin',role:'admin',lvl:'👑 Admin',av:'👑'},
+  'joao@email.com':{pass:'123456',name:'João Silva',role:'user',lvl:'🔵 Safira',av:'👤',newUser:true}
+};
+const VERSES=[
+  {t:'"Tudo posso naquele que me fortalece."',r:'Filipenses 4:13'},
+  {t:'"O Senhor é meu pastor, nada me faltará."',r:'Salmos 23:1'},
+  {t:'"Busca primeiro o reino de Deus."',r:'Mateus 6:33'},
+  {t:'"Confia no Senhor de todo o teu coração."',r:'Provérbios 3:5'},
+  {t:'"Este é o dia que o Senhor fez; alegremo-nos nele."',r:'Salmos 118:24'},
+  {t:'"Não temas, porque eu sou contigo."',r:'Isaías 41:10'},
+];
+const CRISIS_WORDS=['cansado','esgotado','deprimido','triste','ansioso','desanimado','difícil','não aguento','não consigo','desistir','sem forças','sofrendo','angustiado','perdido'];
+let CU=null,jAlertId=null,obStep2=1;
+
+// ─── LOGIN ───
+function doLogin(){
+  const e=document.getElementById('l-email').value;
+  const p=document.getElementById('l-pass').value;
+  const u=USERS[e];
+  if(!u||u.pass!==p){alert('Email ou senha incorretos.');return;}
+  CU={...u,email:e};
+  document.getElementById('login-screen').style.display='none';
+  if(u.role==='user'&&u.newUser){document.getElementById('onboarding').style.display='block';}
+  else{startApp();}
+}
+function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
+
+// ─── ONBOARDING ───
+function civilChange(){
+  const v=document.getElementById('ob-civil').value;
+  document.getElementById('f-conjuge').style.display=v==='casado'?'block':'none';
+}
+function filhosChange(){
+  document.getElementById('f-filhos').style.display=document.getElementById('ob-filhos').value==='sim'?'block':'none';
+}
+function addPerson(){
+  const l=document.getElementById('plist');
+  const r=document.createElement('div');r.className='person-row';
+  r.innerHTML=`<input placeholder="Nome" class="pname"><select class="prel"><option>Amigo(a)</option><option>Irmão/Irmã</option><option>Sócio</option><option>Mentor</option><option>Outro</option></select><button class="rm-btn" onclick="rmRow(this)">×</button>`;
+  l.appendChild(r);
+}
+function rmRow(b){b.closest('.person-row').remove();}
+function obGo(n){
+  document.getElementById('os'+obStep2).classList.remove('active');
+  document.getElementById('sd'+obStep2).classList.add('on');
+  obStep2=n;
+  document.getElementById('os'+n).classList.add('active');
+}
+function finishOb(){
+  const nome=document.getElementById('ob-nome').value||'Amigo';
+  const mae=document.getElementById('ob-mae').value;
+  USERS['joao@email.com'].name=nome;
+  USERS['joao@email.com'].newUser=false;
+  if(mae)document.getElementById('n-mae').textContent=mae;
+  document.getElementById('onboarding').style.display='none';
+  startApp();
+}
+
+// ─── START APP ───
+function startApp(){
+  document.getElementById('app').style.display='block';
+  const u=CU;
+  document.getElementById('sb-av').textContent=u.av;
+  document.getElementById('sb-name').textContent=u.name;
+  document.getElementById('sb-lvl').textContent=u.lvl;
+  if(u.role==='admin')document.getElementById('admin-nav').style.display='block';
+  const now=new Date();
+  const h=now.getHours();
+  const g=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  document.getElementById('d-greet').textContent=g+', '+u.name.split(' ')[0]+'! ✨';
+  document.getElementById('d-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('ag-dt').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('d-rab').style.display='block';
+  const v=VERSES[Math.floor(Math.random()*VERSES.length)];
+  document.getElementById('d-verse').textContent=v.t;
+  // Show ritual after short delay
+  setTimeout(()=>showRitual(),400);
+}
+
+// ─── RITUAL ───
+function showRitual(){
+  const overlay=document.getElementById('ritual-overlay');
+  overlay.style.display='flex';
+  overlay.classList.remove('hide');
+  const u=CU;
+  document.getElementById('r-name').textContent=u.name.split(' ')[0];
+  const now=new Date();
+  document.getElementById('r-time').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const v=VERSES[Math.floor(Math.random()*VERSES.length)];
+  document.getElementById('r-verse').textContent=v.t;
+  document.getElementById('r-ref').textContent=v.r;
+  const icon=document.querySelector('.ritual-icon');
+  const h=now.getHours();
+  icon.textContent=h<12?'🌅':h<18?'☀️':'🌙';
+}
+function closeRitual(){
+  const o=document.getElementById('ritual-overlay');
+  o.classList.add('hide');
+  setTimeout(()=>o.style.display='none',600);
+}
+
+// ─── NAV ───
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  if(btn)btn.classList.add('active');
+  else document.querySelectorAll('.nb').forEach(b=>{if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active');});
+}
+
+// ─── TASKS ───
+function tk(el){
+  el.classList.toggle('done');
+  const l=el.nextElementSibling;
+  if(l)l.classList.toggle('done');
+}
+
+// ─── MODALS ───
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-ov').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ─── FINANCES ───
+function ftab(t,btn){
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('fp-pf').style.display=t==='pf'?'block':'none';
+  document.getElementById('fp-pj').style.display=t==='pj'?'block':'none';
+  document.getElementById('fp-g').style.display=t==='g'?'block':'none';
+}
+function addTx(){
+  const p=document.getElementById('tx-p').value;
+  const t=document.getElementById('tx-t').value;
+  const d=document.getElementById('tx-d').value;
+  const v=parseFloat(document.getElementById('tx-v').value)||0;
+  if(!d||!v){closeM('m-tx');return;}
+  const l=document.getElementById('txs-pf');
+  const div=document.createElement('div');div.className='tx';
+  const isIn=t==='in';
+  div.innerHTML=`<div class="tx-ic ${isIn?'ti':'to'}">${isIn?'💰':'💸'}</div><div class="tx-info"><div class="tx-n">${d}</div><div class="tx-c">${p.toUpperCase()} · hoje</div></div><div class="tx-v ${isIn?'tvi':'tvo'}">${isIn?'+':'-'}R$ ${v.toFixed(2).replace('.',',')}</div>`;
+  l.prepend(div);
+  closeM('m-tx');
+}
+
+// ─── JUSTIFY ───
+function openJ(alertId,ctx){
+  jAlertId=alertId;
+  document.getElementById('j-ctx').innerHTML=`<strong>Alerta ativo:</strong> ${ctx}`;
+  document.getElementById('j-text').value='';
+  const fb=document.getElementById('j-fb');fb.style.display='none';fb.className='jfeedback';
+  document.getElementById('j-btn').style.display='inline-block';
+  openM('m-justify');
+}
+async function submitJ(){
+  const text=document.getElementById('j-text').value.trim();
+  if(!text){alert('Escreva sua justificativa.');return;}
+  const btn=document.getElementById('j-btn');
+  btn.textContent='⏳ IA avaliando...';btn.disabled=true;
+  const fb=document.getElementById('j-fb');
+  fb.style.display='block';fb.className='jfeedback';fb.textContent='Analisando...';
+  try{
+    const ctx=document.getElementById('j-ctx').textContent;
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      system:`Você é um Coach de Vida IA com base cristã. Avalie se a justificativa do aluno para não cumprir um compromisso é COERENTE ou INCOERENTE.
+COERENTE: emergência real, motivo inevitável, situação excepcional.
+INCOERENTE: preguiça, desculpa fraca, falta de comprometimento.
+Se coerente: aceite com empatia, encoraje a retomar. Diga "ACEITA".
+Se incoerente: questione com firmeza e carinho, use humor leve, não deixe passar fácil. Use versículos se pertinente. Diga "NÃO ACEITA".
+Responda em português brasileiro, máximo 4 linhas.`,
+      messages:[{role:'user',content:`Alerta: ${ctx}\nJustificativa: "${text}"`}]
+    })});
+    const data=await r.json();
+    const reply=data.content?.[0]?.text||'Não foi possível avaliar.';
+    fb.textContent=reply;
+    const ok=reply.toLowerCase().includes('aceita')&&!reply.toLowerCase().includes('não aceita');
+    fb.className='jfeedback '+(ok?'jf-ok':'jf-no');
+    if(ok){
+      setTimeout(()=>{
+        const el=document.getElementById(jAlertId);
+        if(el){el.style.opacity='0';el.style.transition='opacity 0.5s';setTimeout(()=>el.remove(),500);}
+        const b=document.getElementById('rbadge');
+        if(b){const n=parseInt(b.textContent)-1;if(n<=0)b.style.display='none';else b.textContent=n;}
+        closeM('m-justify');
+      },3000);
+    }
+  }catch{fb.textContent='Reflita bem sobre seu compromisso e tente novamente com sinceridade. 😊';fb.className='jfeedback jf-no';}
+  btn.textContent='Enviar para IA avaliar';btn.disabled=false;
+}
+
+// ─── CHECK-IN ───
+function selOpt(el){
+  const opts=el.closest('.cq-opts').querySelectorAll('.cq-opt');
+  opts.forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function submitCheckin(){
+  alert('✅ Check-in enviado! Relatório gerado automaticamente e enviado ao mentor. Confira a página Relatório PDF para visualizar.');
+  go('relatorio',null);
+}
+
+// ─── DIARY ───
+async function saveDiario(){
+  const text=document.getElementById('diario-text').value.trim();
+  if(!text){closeM('m-diario');return;}
+  closeM('m-diario');
+  const list=document.getElementById('page-diario');
+  const entry=document.createElement('div');entry.className='diary-entry';
+  const now=new Date();
+  entry.innerHTML=`<div class="de-date">${now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div><div class="de-text">${text}</div><div class="de-feedback">✦ IA: Analisando seu registro...</div>`;
+  const st=list.querySelector('.st');
+  if(st)st.after(entry);
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:500,
+      system:`Você é um Coach de Vida IA. Leia o relato do aluno sobre o dia e faça uma devolução reflexiva personalizada. Identifique padrões, faça perguntas provocativas, celebre conquistas, questione comportamentos ruins. Máximo 3 linhas. Português brasileiro. Comece com "✦ IA:"`,
+      messages:[{role:'user',content:`Relato do dia: "${text}"`}]
+    })});
+    const data=await r.json();
+    const reply=data.content?.[0]?.text||'✦ IA: Obrigado por compartilhar seu dia. Continue registrando!';
+    entry.querySelector('.de-feedback').textContent=reply;
+  }catch{entry.querySelector('.de-feedback').textContent='✦ IA: Padrões identificados. Continue registrando para análises mais profundas!';}
+}
+
+// ─── CARTA ───
+function saveCarta(){
+  const t=document.getElementById('carta-text').value.trim();
+  if(!t){alert('Escreva sua carta antes de selar.');return;}
+  alert('💌 Carta selada! Será enviada para você em 27 de outubro de 2026. A IA irá comparar com seu progresso no app. Obrigado por se comprometer com o futuro!');
+  document.querySelector('.seal.off:nth-child(6)').classList.remove('off');
+  document.querySelector('.seal.off:nth-child(6)').classList.add('on');
+}
+
+// ─── AI CHAT (CRISIS DETECTION) ───
+async function sendMsg(){
+  const ta=document.getElementById('chat-ta');
+  const text=ta.value.trim();if(!text)return;ta.value='';
+  const msgs=document.getElementById('chat-msgs');
+  const uMsg=document.createElement('div');uMsg.className='msg u';
+  uMsg.innerHTML=`<div class="msg-av av-u">👤</div><div class="msg-bub">${text}</div>`;
+  msgs.appendChild(uMsg);msgs.scrollTop=msgs.scrollHeight;
+
+  // Crisis detection
+  const lc=text.toLowerCase();
+  const crisis=CRISIS_WORDS.some(w=>lc.includes(w));
+  if(crisis){document.getElementById('crisis-banner').classList.add('show');}
+
+  const typing=document.createElement('div');typing.className='msg';
+  typing.innerHTML=`<div class="msg-av av-ai">✦</div><div class="msg-bub"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  msgs.appendChild(typing);msgs.scrollTop=msgs.scrollHeight;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',max_tokens:1000,
+      system:`Você é um Coach de Vida IA com base cristã, treinado para acompanhar o aluno em equilíbrio em todas as áreas: espiritual, financeira, saúde, família e desenvolvimento.
+
+Alertas ativos: Academia (3 dias), Devocional (4 dias), Mãe (8 dias sem contato).
+Nível: Safira. Score geral: 61%.
+
+Detectou crise emocional: ${crisis}
+
+Se em crise: seja extremamente acolhedor, use versículos de conforto, ofereça apoio. Se não: seja direto, motivador, questione desculpas fracas com carinho e humor.
+
+Máximo 130 palavras. Português brasileiro.`,
+      messages:[{role:'user',content:text}]
+    })});
+    const data=await r.json();
+    const reply=data.content?.[0]?.text||'Estou aqui para te ajudar! 😊';
+    typing.remove();
+    const ai=document.createElement('div');ai.className='msg';
+    ai.innerHTML=`<div class="msg-av av-ai">✦</div><div class="msg-bub">${reply}</div>`;
+    msgs.appendChild(ai);
+  }catch{
+    typing.remove();
+    const ai=document.createElement('div');ai.className='msg';
+    ai.innerHTML=`<div class="msg-av av-ai">✦</div><div class="msg-bub">Estou aqui com você. Como posso te ajudar agora? 😊</div>`;
+    msgs.appendChild(ai);
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+</script>
+</body>
+</html>
