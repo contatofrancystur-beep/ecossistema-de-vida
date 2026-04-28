@@ -390,9 +390,27 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
     <div class="fg"><label>E-mail</label><input type="email" id="l-email" value="admin@mentoria.com"></div>
     <div class="fg"><label>Senha</label><input type="password" id="l-pass" value="admin123"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
-    <div class="hint">Admin: <strong>admin@mentoria.com</strong> / <strong>admin123</strong><br>Aluno: <strong>joao@email.com</strong> / <strong>123456</strong></div>
+    <div style="text-align:center;margin-top:14px">
+      <span style="color:var(--mu);font-size:12px">Primeiro acesso? </span>
+      <button onclick="showRegister()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;">Criar conta →</button>
+    </div>
   </div>
 </div>
+
+<!-- REGISTER SCREEN -->
+<div id="register-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:2000;align-items:center;justify-content:center;padding:20px;">
+  <div class="login-bg-fx"></div>
+  <div class="login-card">
+    <div class="lc-logo">✦ Criar Conta</div>
+    <div class="lc-sub">Ecossistema de Vida · Novo Aluno</div>
+    <div class="fg"><label>Nome completo</label><input type="text" id="reg-nome" placeholder="Seu nome completo"></div>
+    <div class="fg"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+    <div class="fg"><label>Senha</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+    <button class="btn-primary" onclick="doRegister()">Criar minha conta</button>
+    <div style="text-align:center;margin-top:14px">
+      <button onclick="showLogin()" style="background:none;border:none;color:var(--go);font-size:12px;cursor:pointer;font-family:'Syne',sans-serif;">← Voltar ao login</button>
+    </div>
+  </div>
 
 <!-- ════ ONBOARDING ════ -->
 <div id="onboarding">
@@ -1004,11 +1022,38 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 </div>
 
 <script>
+// ─── SUPABASE CONFIG ───
+const SUPA_URL='https://mnhsbfyineanezsflcqj.supabase.co';
+const SUPA_KEY='sb_publishable_u8WbN1N7yjuY2JWyvQxeyw_6ujOjxhu';
+
+async function supaFetch(path, method='GET', body=null, token=null){
+  const headers={'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(token||SUPA_KEY)};
+  const opts={method,headers};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(SUPA_URL+path,opts);
+  return r.json();
+}
+
+async function supaAuth(email,pass){
+  const r=await fetch(SUPA_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+    body:JSON.stringify({email,password:pass})
+  });
+  return r.json();
+}
+
+async function supaSignup(email,pass,nome){
+  const r=await fetch(SUPA_URL+'/auth/v1/signup',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+    body:JSON.stringify({email,password:pass,options:{data:{nome}}})
+  });
+  return r.json();
+}
+
 // ─── DATA ───
-const USERS={
-  'admin@mentoria.com':{pass:'admin123',name:'Admin',role:'admin',lvl:'👑 Admin',av:'👑'},
-  'joao@email.com':{pass:'123456',name:'João Silva',role:'user',lvl:'🔵 Safira',av:'👤',newUser:true}
-};
+const ADMIN_EMAIL='admin@mentoria.com';
 const VERSES=[
   {t:'"Tudo posso naquele que me fortalece."',r:'Filipenses 4:13'},
   {t:'"O Senhor é meu pastor, nada me faltará."',r:'Salmos 23:1'},
@@ -1020,18 +1065,85 @@ const VERSES=[
 const CRISIS_WORDS=['cansado','esgotado','deprimido','triste','ansioso','desanimado','difícil','não aguento','não consigo','desistir','sem forças','sofrendo','angustiado','perdido'];
 let CU=null,jAlertId=null,obStep2=1;
 
-// ─── LOGIN ───
-function doLogin(){
-  const e=document.getElementById('l-email').value;
-  const p=document.getElementById('l-pass').value;
-  const u=USERS[e];
-  if(!u||u.pass!==p){alert('Email ou senha incorretos.');return;}
-  CU={...u,email:e};
+function showRegister(){
   document.getElementById('login-screen').style.display='none';
-  if(u.role==='user'&&u.newUser){document.getElementById('onboarding').style.display='block';}
-  else{startApp();}
+  const r=document.getElementById('register-screen');
+  r.style.display='flex';
 }
-function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
+function showLogin(){
+  document.getElementById('register-screen').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+}
+async function doRegister(){
+  const nome=document.getElementById('reg-nome').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  if(!nome||!email||!pass){alert('Preencha todos os campos.');return;}
+  if(pass.length<6){alert('Senha precisa ter pelo menos 6 caracteres.');return;}
+  const btn=document.getElementById('register-screen').querySelector('.btn-primary');
+  btn.textContent='Criando conta...';btn.disabled=true;
+  try{
+    const data=await supaSignup(email,pass,nome);
+    if(data.error){
+      alert('Erro: '+(data.error.message||'Tente novamente.'));
+      btn.textContent='Criar minha conta';btn.disabled=false;return;
+    }
+    alert('✅ Conta criada! Verifique seu email para confirmar o cadastro, depois faça login.');
+    showLogin();
+    document.getElementById('l-email').value=email;
+  }catch(e){
+    alert('Erro ao criar conta. Tente novamente.');
+  }
+  btn.textContent='Criar minha conta';btn.disabled=false;
+}
+
+// ─── LOGIN ───
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){alert('Preencha email e senha.');return;}
+  const btn=document.querySelector('.btn-primary');
+  btn.textContent='Entrando...';btn.disabled=true;
+  try{
+    const data=await supaAuth(email,pass);
+    if(data.error||!data.access_token){
+      alert('Email ou senha incorretos.');
+      btn.textContent='Entrar';btn.disabled=false;return;
+    }
+    // Get profile
+    const profile=await supaFetch(`/rest/v1/profiles?id=eq.${data.user.id}&select=*`,'GET',null,data.access_token);
+    const p=Array.isArray(profile)&&profile[0]?profile[0]:{};
+    const isAdmin=email===ADMIN_EMAIL;
+    CU={
+      id:data.user.id,
+      email,
+      name:p.nome||email.split('@')[0],
+      role:isAdmin?'admin':(p.role||'aluno'),
+      lvl:isAdmin?'👑 Admin':(p.nivel?'💎 '+p.nivel:'🪨 Pedra Bruta'),
+      av:isAdmin?'👑':'👤',
+      token:data.access_token,
+      newUser:!p.nome
+    };
+    document.getElementById('login-screen').style.display='none';
+    if(CU.role!=='admin'&&CU.newUser){
+      document.getElementById('onboarding').style.display='block';
+    } else {
+      startApp();
+    }
+  }catch(err){
+    alert('Erro ao conectar. Verifique sua internet.');
+    btn.textContent='Entrar';btn.disabled=false;
+  }
+}
+
+async function doLogout(){
+  await fetch(SUPA_URL+'/auth/v1/logout',{method:'POST',headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+(CU?.token||'')}});
+  CU=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.querySelector('.btn-primary').textContent='Entrar';
+  document.querySelector('.btn-primary').disabled=false;
+}
 
 // ─── ONBOARDING ───
 function civilChange(){
@@ -1054,11 +1166,27 @@ function obGo(n){
   obStep2=n;
   document.getElementById('os'+n).classList.add('active');
 }
-function finishOb(){
+async function finishOb(){
   const nome=document.getElementById('ob-nome').value||'Amigo';
-  const mae=document.getElementById('ob-mae').value;
-  USERS['joao@email.com'].name=nome;
-  USERS['joao@email.com'].newUser=false;
+  const mae=document.getElementById('ob-mae').value||'';
+  const pai=document.getElementById('ob-pai').value||'';
+  const civil=document.getElementById('ob-civil').value||'';
+  const conjuge=document.getElementById('ob-conjuge').value||'';
+  const academia=document.getElementById('ob-ac').value||'';
+  const igreja=document.getElementById('ob-igreja').value||'';
+  const perfilFin=document.getElementById('ob-pf').value||'ambos';
+  const empresa=document.getElementById('ob-emp').value||'';
+  const meta=parseFloat(document.getElementById('ob-meta').value)||0;
+
+  // Save to Supabase
+  try{
+    await supaFetch(`/rest/v1/profiles?id=eq.${CU.id}`,'PATCH',{
+      nome,mae,pai,civil,conjuge,academia,igreja,
+      perfil_financeiro:perfilFin,empresa,meta_faturamento:meta
+    },CU.token);
+  }catch(e){console.log('Profile save error',e);}
+
+  CU.name=nome;CU.newUser=false;
   if(mae)document.getElementById('n-mae').textContent=mae;
   document.getElementById('onboarding').style.display='none';
   startApp();
