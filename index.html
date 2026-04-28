@@ -941,7 +941,11 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ADMIN -->
       <div class="page" id="page-admin">
-        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos</p></div><button class="btn-gold" onclick="go('relatorio',null)">📄 Relatório PDF</button></div>
+        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos</p></div>
+        <div class="ha">
+          <button class="btn-sm" onclick="go('relatorio',null)">📄 Relatório</button>
+          <button class="btn-gold" onclick="openM('m-invite')">+ Convidar Aluno</button>
+        </div></div>
         <div class="admin-top-bar">👑 Modo Admin — Acesso total a todos os alunos da mentoria</div>
         <div class="g4" style="margin-bottom:22px">
           <div class="card"><div class="cl">Total Alunos</div><div class="cv">12</div></div>
@@ -1006,6 +1010,22 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 <div class="modal-ov" id="m-proj"><div class="modal"><h3>🎯 Novo Projeto</h3><div class="fg"><label>Nome do Projeto</label><input placeholder="Ex: Abrir empresa"></div><div class="fg"><label>Prazo</label><input type="month"></div><div class="fg"><label>Primeiro passo</label><input placeholder="Ex: Pesquisar tipo de empresa"></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-proj')">Cancelar</button><button class="btn-gold" onclick="closeM('m-proj')">Criar Projeto</button></div></div></div>
 <div class="modal-ov" id="m-elim"><div class="modal"><h3>🚫 Nova Eliminação</h3><div class="fg"><label>O que eliminar/reduzir/delegar</label><input placeholder="Ex: Redes sociais em excesso"></div><div class="fg"><label>Categoria</label><select><option>🔴 Eliminar — para de vez</option><option>🟡 Reduzir — colocar limite</option><option>🔵 Delegar — tira da sua mão</option></select></div><div class="fg"><label>Por que isso te prejudica?</label><textarea rows="2" placeholder="Explique o impacto negativo..."></textarea></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-elim')">Cancelar</button><button class="btn-gold" onclick="closeM('m-elim')">Salvar</button></div></div></div>
 <div class="modal-ov" id="m-diario"><div class="modal"><h3>📓 Registro do Dia</h3><div class="fg"><label>Como foi seu dia?</label><textarea id="diario-text" rows="5" placeholder="Escreva livremente — a IA vai ler e responder com uma devolução personalizada..."></textarea></div><div class="mbtns"><button class="btn-cancel" onclick="closeM('m-diario')">Cancelar</button><button class="btn-gold" onclick="saveDiario()">Salvar — IA vai analisar</button></div></div></div>
+
+<!-- INVITE MODAL -->
+<div class="modal-ov" id="m-invite">
+  <div class="modal">
+    <h3>✉️ Convidar Novo Aluno</h3>
+    <div class="al blue" style="margin-bottom:16px"><div class="aldot db"></div><div class="al-body"><div class="al-text">O aluno receberá um email com o link de acesso e a senha temporária que você definir.</div></div></div>
+    <div class="fg"><label>Nome completo do aluno</label><input id="inv-nome" placeholder="Ex: João Silva"></div>
+    <div class="fg"><label>Email do aluno</label><input type="email" id="inv-email" placeholder="Ex: joao@email.com"></div>
+    <div class="fg"><label>Senha temporária</label><input type="text" id="inv-pass" placeholder="Ex: Mentoria@2026" value="Mentoria@2026"></div>
+    <div id="inv-feedback" style="display:none;padding:12px;border-radius:10px;font-size:13px;margin-top:10px;line-height:1.5"></div>
+    <div class="mbtns">
+      <button class="btn-cancel" onclick="closeM('m-invite')">Cancelar</button>
+      <button class="btn-gold" id="inv-btn" onclick="inviteStudent()">✉️ Cadastrar e Enviar Email</button>
+    </div>
+  </div>
+</div>
 
 <!-- JUSTIFY MODAL -->
 <div class="modal-ov" id="m-justify">
@@ -1095,6 +1115,69 @@ async function doRegister(){
     alert('Erro ao criar conta. Tente novamente.');
   }
   btn.textContent='Criar minha conta';btn.disabled=false;
+}
+
+// ─── ADMIN INVITE STUDENT ───
+async function inviteStudent(){
+  const nome=document.getElementById('inv-nome').value.trim();
+  const email=document.getElementById('inv-email').value.trim();
+  const pass=document.getElementById('inv-pass').value.trim();
+  if(!nome||!email||!pass){alert('Preencha todos os campos.');return;}
+  const btn=document.getElementById('inv-btn');
+  const fb=document.getElementById('inv-feedback');
+  btn.textContent='Cadastrando...';btn.disabled=true;
+  fb.style.display='none';
+  try{
+    // Create user via Supabase Admin API
+    const r=await fetch(SUPA_URL+'/auth/v1/admin/users',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+CU.token
+      },
+      body:JSON.stringify({
+        email,
+        password:pass,
+        email_confirm:true,
+        user_metadata:{nome}
+      })
+    });
+    const data=await r.json();
+    if(data.error||!data.id){
+      fb.style.display='block';
+      fb.style.background='var(--rda)';
+      fb.style.border='1px solid rgba(224,82,82,0.3)';
+      fb.textContent='Erro: '+(data.msg||data.error?.message||'Tente novamente.');
+      btn.textContent='✉️ Cadastrar e Enviar Email';btn.disabled=false;return;
+    }
+    // Send invite email via Supabase
+    await fetch(SUPA_URL+'/auth/v1/admin/users/'+data.id+'/send-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+CU.token},
+      body:JSON.stringify({type:'invite'})
+    }).catch(()=>{});
+
+    fb.style.display='block';
+    fb.style.background='var(--gna)';
+    fb.style.border='1px solid rgba(57,184,116,0.3)';
+    fb.textContent=`✅ ${nome} cadastrado com sucesso! Email enviado para ${email} com a senha temporária: ${pass}`;
+
+    // Add to table visually
+    const table=document.querySelector('.std-table');
+    const row=document.createElement('div');
+    row.className='std-r';
+    row.innerHTML=`<div class="std-name">${nome}</div><div>🪨 Pedra Bruta</div><div style="color:var(--mu);font-weight:800">—</div><div><span class="ac" style="background:var(--gna);color:var(--gn)">Novo</span></div><div style="font-size:11px;color:var(--mu)">Dom 20h</div><div><span class="std-status ss-ok">Ativo</span></div>`;
+    table.appendChild(row);
+
+    document.getElementById('inv-nome').value='';
+    document.getElementById('inv-email').value='';
+  }catch(e){
+    fb.style.display='block';
+    fb.style.background='var(--rda)';
+    fb.textContent='Erro ao cadastrar. Verifique sua conexão.';
+  }
+  btn.textContent='✉️ Cadastrar e Enviar Email';btn.disabled=false;
 }
 
 // ─── LOGIN ───
@@ -1201,15 +1284,15 @@ function startApp(){
   document.getElementById('sb-lvl').textContent=u.lvl;
   if(u.role==='admin')document.getElementById('admin-nav').style.display='block';
   const now=new Date();
+  // Fix: use local Brazil time
   const h=now.getHours();
-  const g=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const g=h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite';
   document.getElementById('d-greet').textContent=g+', '+u.name.split(' ')[0]+'! ✨';
   document.getElementById('d-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('ag-dt').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('d-rab').style.display='block';
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('d-verse').textContent=v.t;
-  // Show ritual after short delay
   setTimeout(()=>showRitual(),400);
 }
 
