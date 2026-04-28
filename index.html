@@ -387,10 +387,10 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
   <div class="login-card">
     <div class="lc-logo">✦ Ecossistema de Vida</div>
     <div class="lc-sub">Plataforma de vida equilibrada com IA · V3</div>
-    <div class="fg"><label>E-mail</label><input type="email" id="l-email" value="admin@mentoria.com"></div>
-    <div class="fg"><label>Senha</label><input type="password" id="l-pass" value="admin123"></div>
+    <div class="fg"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com"></div>
+    <div class="fg"><label>Senha</label><input type="password" id="l-pass" placeholder="••••••••"></div>
     <button class="btn-primary" onclick="doLogin()">Entrar</button>
-    <div class="hint">Admin: <strong>admin@mentoria.com</strong> / <strong>admin123</strong><br>Aluno: <strong>joao@email.com</strong> / <strong>123456</strong></div>
+    <div class="hint">Use seu email e senha cadastrados</div>
   </div>
 </div>
 
@@ -1024,11 +1024,21 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 </div>
 
 <script>
+// ─── SUPABASE ───
+const SUPA_URL='https://mnhsbfyineanezsflcqj.supabase.co';
+const SUPA_KEY='sb_publishable_u8WbN1N7yjuY2JWyvQxeyw_6ujOjxhu';
+const ADMIN_EMAIL='mentorandreifrancisconi@gmail.com';
+
+async function supaAuth(email,pass){
+  const r=await fetch(SUPA_URL+'/auth/v1/token?grant_type=password',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPA_KEY},
+    body:JSON.stringify({email,password:pass})
+  });
+  return r.json();
+}
+
 // ─── DATA ───
-const USERS={
-  'admin@mentoria.com':{pass:'admin123',name:'Admin',role:'admin',lvl:'👑 Admin',av:'👑'},
-  'joao@email.com':{pass:'123456',name:'João Silva',role:'user',lvl:'🔵 Safira',av:'👤',newUser:true}
-};
 const VERSES=[
   {t:'"Tudo posso naquele que me fortalece."',r:'Filipenses 4:13'},
   {t:'"O Senhor é meu pastor, nada me faltará."',r:'Salmos 23:1'},
@@ -1041,17 +1051,43 @@ const CRISIS_WORDS=['cansado','esgotado','deprimido','triste','ansioso','desanim
 let CU=null,jAlertId=null,obStep2=1;
 
 // ─── LOGIN ───
-function doLogin(){
-  const e=document.getElementById('l-email').value;
-  const p=document.getElementById('l-pass').value;
-  const u=USERS[e];
-  if(!u||u.pass!==p){alert('Email ou senha incorretos.');return;}
-  CU={...u,email:e};
-  document.getElementById('login-screen').style.display='none';
-  if(u.role==='user'&&u.newUser){document.getElementById('onboarding').style.display='block';}
-  else{startApp();}
+async function doLogin(){
+  const email=document.getElementById('l-email').value.trim();
+  const pass=document.getElementById('l-pass').value;
+  if(!email||!pass){alert('Preencha email e senha.');return;}
+  const btn=document.querySelector('#login-screen .btn-primary');
+  btn.textContent='Entrando...';btn.disabled=true;
+  try{
+    const data=await supaAuth(email,pass);
+    if(data.error||!data.access_token){
+      alert('Email ou senha incorretos.');
+      btn.textContent='Entrar';btn.disabled=false;return;
+    }
+    const isAdmin=email===ADMIN_EMAIL;
+    CU={
+      id:data.user.id,
+      email,
+      name:isAdmin?'Admin':email.split('@')[0],
+      role:isAdmin?'admin':'aluno',
+      lvl:isAdmin?'👑 Admin':'🪨 Pedra Bruta',
+      av:isAdmin?'👑':'👤',
+      token:data.access_token,
+      newUser:false
+    };
+    document.getElementById('login-screen').style.display='none';
+    startApp();
+  }catch(err){
+    alert('Erro de conexão. Verifique sua internet.');
+    btn.textContent='Entrar';btn.disabled=false;
+  }
 }
-function doLogout(){CU=null;document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';}
+function doLogout(){
+  CU=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.querySelector('#login-screen .btn-primary').textContent='Entrar';
+  document.querySelector('#login-screen .btn-primary').disabled=false;
+}
 
 // ─── ONBOARDING ───
 function civilChange(){
