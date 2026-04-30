@@ -350,7 +350,71 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
   .sidebar{display:none;}
   .areas,.gems-grid,.g4{grid-template-columns:repeat(2,1fr);}
   .g3{grid-template-columns:1fr;}
+  .content{padding:20px 16px 90px;}
+  .ph h2{font-size:22px;}
+  .g2{grid-template-columns:1fr;}
 }
+
+/* ══ BACK BUTTON ══ */
+.back-btn{
+  display:none;
+  align-items:center;gap:8px;
+  background:none;border:none;color:var(--mu);
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;padding:0;margin-bottom:20px;
+  transition:color 0.2s;
+}
+.back-btn:hover{color:var(--go);}
+.back-btn .back-arrow{
+  width:32px;height:32px;border-radius:10px;
+  background:var(--s2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all 0.2s;
+}
+.back-btn:hover .back-arrow{background:var(--ga);border-color:var(--go);}
+@media(max-width:900px){
+  .back-btn{display:flex;}
+}
+.mobile-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--s1);border-top:1px solid var(--bd2);
+  z-index:500;padding:8px 0 12px;
+}
+.mobile-nav-inner{display:flex;justify-content:space-around;align-items:center;}
+.mnav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;color:var(--mu);cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:10px;font-weight:600;
+  padding:4px 12px;border-radius:10px;transition:all 0.2s;min-width:56px;
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.mnav-btn .mni{font-size:22px;transition:transform 0.2s;}
+.mnav-btn.active{color:var(--go);}
+.mnav-btn.active .mni{transform:scale(1.15);}
+.mnav-badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--rd);color:#fff;font-size:9px;
+  padding:1px 5px;border-radius:8px;font-weight:800;
+}
+.mnav-icon-wrap{position:relative;display:inline-block;}
+
+@media(max-width:900px){
+  .mobile-nav{display:block;}
+}
+
+/* ══ SIDEBAR COLLAPSIBLE ══ */
+.ns-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:9px;color:var(--mu2);text-transform:uppercase;
+  letter-spacing:1.8px;padding:14px 10px 5px;cursor:pointer;
+  font-weight:700;user-select:none;
+}
+.ns-toggle:hover{color:var(--mu);}
+.ns-toggle .arrow{font-size:10px;transition:transform 0.2s;}
+.ns-toggle.collapsed .arrow{transform:rotate(-90deg);}
+.ns-group{overflow:hidden;transition:max-height 0.3s ease;}
+.ns-group.collapsed{max-height:0!important;}
 </style>
 </head>
 <body>
@@ -543,25 +607,58 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
         <button class="nb" onclick="go('saude',this)"><span class="ni">💪</span>Saúde & Academia</button>
         <div class="ns">Financeiro</div>
         <button class="nb" onclick="go('financas',this)"><span class="ni">💰</span>Finanças PF/PJ</button>
-        <div class="ns">Relacionamentos</div>
-        <button class="nb" onclick="go('familia',this)"><span class="ni">👨‍👩‍👧</span>Família & Amigos</button>
-        <div class="ns">Planejamento</div>
-        <button class="nb" onclick="go('projetos',this)"><span class="ni">🎯</span>Projetos Futuros</button>
-        <button class="nb" onclick="go('eliminacao',this)"><span class="ni">🚫</span>Zona de Eliminação</button>
-        <div class="ns">IA & Progresso</div>
-        <button class="nb" onclick="go('ia',this)"><span class="ni">🤖</span>Coach IA</button>
-        <button class="nb" onclick="go('diario',this)"><span class="ni">📓</span>Diário Reflexivo</button>
-        <button class="nb" onclick="go('checkin',this)"><span class="ni">📊</span>Check-in Semanal</button>
-        <button class="nb" onclick="go('carta',this)"><span class="ni">💌</span>Carta ao Futuro</button>
-        <button class="nb" onclick="go('conquistas',this)"><span class="ni">💎</span>Conquistas</button>
+
+        <div class="ns-toggle" onclick="toggleGroup('g-relacionamentos',this)">Relacionamentos <span class="arrow">▾</span></div>
+        <div class="ns-group" id="g-relacionamentos">
+          <button class="nb" onclick="go('familia',this)"><span class="ni">👨‍👩‍👧</span>Família & Amigos</button>
+        </div>
+
+        <div class="ns-toggle" onclick="toggleGroup('g-planejamento',this)">Planejamento <span class="arrow">▾</span></div>
+        <div class="ns-group" id="g-planejamento">
+          <button class="nb" onclick="go('projetos',this)"><span class="ni">🎯</span>Projetos Futuros</button>
+          <button class="nb" onclick="go('eliminacao',this)"><span class="ni">🚫</span>Zona de Eliminação</button>
+        </div>
+
+        <div class="ns-toggle" onclick="toggleGroup('g-ia',this)">IA & Progresso <span class="arrow">▾</span></div>
+        <div class="ns-group" id="g-ia">
+          <button class="nb" onclick="go('ia',this)"><span class="ni">🤖</span>Coach IA</button>
+          <button class="nb" onclick="go('diario',this)"><span class="ni">📓</span>Diário Reflexivo</button>
+          <button class="nb" onclick="go('checkin',this)"><span class="ni">📊</span>Check-in Semanal</button>
+          <button class="nb" onclick="go('carta',this)"><span class="ni">💌</span>Carta ao Futuro</button>
+          <button class="nb" onclick="go('conquistas',this)"><span class="ni">💎</span>Conquistas</button>
+        </div>
+
         <div id="admin-nav" style="display:none">
-          <div class="ns">Admin</div>
-          <button class="nb" onclick="go('admin',this)"><span class="ni">👑</span>Painel Admin<span class="nbadge nb-gold">ADM</span></button>
-          <button class="nb" onclick="go('relatorio',this)"><span class="ni">📄</span>Relatório PDF</button>
+          <div class="ns-toggle" onclick="toggleGroup('g-admin',this)">Admin <span class="arrow">▾</span></div>
+          <div class="ns-group" id="g-admin">
+            <button class="nb" onclick="go('admin',this)"><span class="ni">👑</span>Painel Admin<span class="nbadge nb-gold">ADM</span></button>
+            <button class="nb" onclick="go('relatorio',this)"><span class="ni">📄</span>Relatório PDF</button>
+          </div>
         </div>
       </div>
       <div class="sb-bottom"><button class="logout-btn" onclick="doLogout()">← Sair</button></div>
     </aside>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-inner">
+        <button class="mnav-btn active" id="mn-home" onclick="go('dashboard',null);setMnav('mn-home')">
+          <span class="mni">🏠</span>Home
+        </button>
+        <button class="mnav-btn" id="mn-esp" onclick="go('espiritual',null);setMnav('mn-esp')">
+          <span class="mni">🙏</span>Espiritual
+        </button>
+        <button class="mnav-btn" id="mn-sau" onclick="go('saude',null);setMnav('mn-sau')">
+          <span class="mni">💪</span>Saúde
+        </button>
+        <button class="mnav-btn" id="mn-fin" onclick="go('financas',null);setMnav('mn-fin')">
+          <span class="mni">💰</span>Finanças
+        </button>
+        <button class="mnav-btn" id="mn-tar" onclick="go('tarefas',null);setMnav('mn-tar')">
+          <div class="mnav-icon-wrap"><span class="mni">✅</span></div>Tarefas
+        </button>
+      </div>
+    </nav>
 
     <main class="content">
 
@@ -606,7 +703,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- RITUAL PAGE -->
       <div class="page" id="page-ritual">
-        <div class="ph"><div><h2>🌅 Ritual da Manhã</h2><p>Abra este módulo ao começar o dia</p></div><button class="btn-gold" onclick="showRitual()">▶ Iniciar Ritual</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🌅 Ritual da Manhã</h2><p>Abra este módulo ao começar o dia</p></div><button class="btn-gold" onclick="showRitual()">▶ Iniciar Ritual</button></div>
         <div class="verse-box"><div class="vt">"Este é o dia que o Senhor fez; regozijemo-nos e alegremo-nos nele."</div><div class="vr">Salmos 118:24</div></div>
         <div class="st">Suas 3 Prioridades de Hoje</div>
         <div class="tasks">
@@ -620,7 +718,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ALERTAS -->
       <div class="page" id="page-alertas">
-        <div class="ph"><div><h2>🚨 Alertas</h2><p>Atividades pendentes que exigem ação</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🚨 Alertas</h2><p>Atividades pendentes que exigem ação</p></div></div>
         <div class="st" style="color:var(--rd)">🔴 Alertas Vermelhos — Justificativa Obrigatória</div>
         <div id="ral">
           <div class="al red" id="ra1">
@@ -644,7 +743,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- AGENDA -->
       <div class="page" id="page-agenda">
-        <div class="ph"><div><h2>📅 Agenda</h2><p id="ag-dt">Hoje</p></div><button class="btn-gold" onclick="openM('m-ev')">+ Evento</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>📅 Agenda</h2><p id="ag-dt">Hoje</p></div><button class="btn-gold" onclick="openM('m-ev')">+ Evento</button></div>
         <div style="display:grid;grid-template-columns:72px 1fr;gap:0">
           <div style="border-right:1px solid var(--bd)">
             <div style="height:60px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:12px;padding-top:8px;font-size:10px;color:var(--mu2)">06:00</div>
@@ -672,7 +772,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- TAREFAS -->
       <div class="page" id="page-tarefas">
-        <div class="ph"><div><h2>✅ Tarefas</h2><p>Seus compromissos diários</p></div><button class="btn-gold" onclick="openM('m-task')">+ Tarefa</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>✅ Tarefas</h2><p>Seus compromissos diários</p></div><button class="btn-gold" onclick="openM('m-task')">+ Tarefa</button></div>
         <div class="st">Pendentes</div>
         <div class="tasks">
           <div class="task"><div class="tck" onclick="tk(this)"></div><div class="tlbl">Devocional diário</div><span class="ttag tsp">Espiritual</span></div>
@@ -690,7 +791,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ESPIRITUAL -->
       <div class="page" id="page-espiritual">
-        <div class="ph"><div><h2>🙏 Vida Espiritual</h2><p>Sua jornada de fé acompanhada com IA</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🙏 Vida Espiritual</h2><p>Sua jornada de fé acompanhada com IA</p></div></div>
         <div class="verse-box"><div class="vt">"Busca ao Senhor enquanto pode ser achado, chama por Ele enquanto está perto."</div><div class="vr">Isaías 55:6</div></div>
         <div class="g3">
           <div class="card"><div class="ci">📖</div><div class="cl">Streak Bíblico</div><div class="cv">18 dias</div><div class="csub">consecutivos</div><div class="bar"><div class="bf" style="width:72%;background:var(--pu)"></div></div></div>
@@ -708,7 +810,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ORAÇÃO -->
       <div class="page" id="page-oracao">
-        <div class="ph"><div><h2>✝️ Pedidos de Oração</h2><p>Seus pedidos e respostas</p></div><button class="btn-gold" onclick="openM('m-ora')">+ Pedido</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>✝️ Pedidos de Oração</h2><p>Seus pedidos e respostas</p></div><button class="btn-gold" onclick="openM('m-ora')">+ Pedido</button></div>
         <div class="st">Pedidos Ativos</div>
         <div class="pr"><div class="pr-dot pr-a"></div><div><div class="pr-t">Sabedoria para decisões no negócio</div><div class="pr-dt">Adicionado há 5 dias</div></div></div>
         <div class="pr"><div class="pr-dot pr-a"></div><div><div class="pr-t">Saúde da minha mãe — cirurgia marcada</div><div class="pr-dt">Adicionado há 2 dias</div></div></div>
@@ -720,7 +823,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- SAÚDE -->
       <div class="page" id="page-saude">
-        <div class="ph"><div><h2>💪 Saúde & Academia</h2><p>Monitore seu bem-estar físico</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>💪 Saúde & Academia</h2><p>Monitore seu bem-estar físico</p></div></div>
         <div class="g3">
           <div class="card"><div class="ci">🏋️</div><div class="cl">Treinos no mês</div><div class="cv">10x</div><div class="csub">meta: 16x/mês</div><div class="bar"><div class="bf" style="width:62%;background:var(--gn)"></div></div></div>
           <div class="card"><div class="ci">💧</div><div class="cl">Água hoje</div><div class="cv">1,4L</div><div class="csub">meta: 2,5L</div><div class="bar"><div class="bf" style="width:56%;background:var(--bl)"></div></div></div>
@@ -741,7 +845,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- FINANÇAS -->
       <div class="page" id="page-financas">
-        <div class="ph"><div><h2>💰 Finanças PF / PJ</h2><p>Controle separado e integrado</p></div><button class="btn-gold" onclick="openM('m-tx')">+ Lançamento</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>💰 Finanças PF / PJ</h2><p>Controle separado e integrado</p></div><button class="btn-gold" onclick="openM('m-tx')">+ Lançamento</button></div>
         <div class="fin-tabs">
           <button class="ftab active" onclick="ftab('pf',this)">👤 Pessoa Física</button>
           <button class="ftab" onclick="ftab('pj',this)">🏢 Pessoa Jurídica</button>
@@ -771,7 +876,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- FAMÍLIA -->
       <div class="page" id="page-familia">
-        <div class="ph"><div><h2>👨‍👩‍👧 Família & Amigos</h2><p>Seus relacionamentos monitorados com IA</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>👨‍👩‍👧 Família & Amigos</h2><p>Seus relacionamentos monitorados com IA</p></div></div>
         <div class="al red" style="margin-bottom:8px"><div class="aldot dr"></div><div class="al-body"><div class="al-text">📞 Faz 8 dias sem falar com sua <strong id="n-mae">mãe</strong>. Esse comportamento não está alinhado com suas prioridades.</div><div class="al-meta">Alertas crescem a cada 3 dias sem ação</div></div><button class="btn-j" onclick="openJ('rel-mae','Contato com a mãe — 8 dias')">Justificar</button></div>
         <div class="al orange" style="margin-bottom:8px"><div class="aldot do2"></div><div class="al-body"><div class="al-text">💌 Não enviou mensagem especial ao cônjuge nos últimos 3 dias</div></div></div>
         <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">🎂 Carlos faz aniversário em 3 dias</div></div></div>
@@ -786,7 +892,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- PROJETOS -->
       <div class="page" id="page-projetos">
-        <div class="ph"><div><h2>🎯 Projetos Futuros</h2><p>Seus sonhos com plano de ação estruturado</p></div><button class="btn-gold" onclick="openM('m-proj')">+ Projeto</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🎯 Projetos Futuros</h2><p>Seus sonhos com plano de ação estruturado</p></div><button class="btn-gold" onclick="openM('m-proj')">+ Projeto</button></div>
         <div class="proj"><div class="proj-h"><div><div class="proj-title">🏢 Abrir empresa (PJ formal)</div><div class="proj-dl">Meta: Julho 2026</div></div><span style="color:var(--go);font-size:13px;font-weight:800">60%</span></div><div class="bar"><div class="bf" style="width:60%;background:var(--go)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Pesquisar tipo de empresa</span></div><div class="ps"><div class="tck done"></div><span>Abrir conta PJ no banco</span></div><div class="ps"><div class="tck done"></div><span>Consultar contador</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Registrar CNPJ</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Emitir primeira NF</span></div></div></div>
         <div class="proj"><div class="proj-h"><div><div class="proj-title">🏠 Comprar imóvel próprio</div><div class="proj-dl">Meta: Dezembro 2027</div></div><span style="color:var(--bl);font-size:13px;font-weight:800">25%</span></div><div class="bar"><div class="bf" style="width:25%;background:var(--bl)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Definir valor de entrada</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Criar poupança dedicada</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Pesquisar regiões e preços</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Simulação de financiamento</span></div></div></div>
         <div class="proj"><div class="proj-h"><div><div class="proj-title">📚 Lançar mentoria própria</div><div class="proj-dl">Meta: Setembro 2026</div></div><span style="color:var(--pu);font-size:13px;font-weight:800">40%</span></div><div class="bar"><div class="bf" style="width:40%;background:var(--pu)"></div></div><div class="proj-steps"><div class="ps"><div class="tck done"></div><span>Definir nicho e público</span></div><div class="ps"><div class="tck done"></div><span>Criar estrutura do programa</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Montar página de vendas</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Gravar conteúdo base</span></div><div class="ps"><div class="tck" onclick="tk(this)"></div><span>Lançamento lista VIP</span></div></div></div>
@@ -794,7 +901,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ZONA DE ELIMINAÇÃO -->
       <div class="page" id="page-eliminacao">
-        <div class="ph"><div><h2>🚫 Zona de Eliminação</h2><p>O que você precisa parar, reduzir ou delegar</p></div><button class="btn-gold" onclick="openM('m-elim')">+ Adicionar</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🚫 Zona de Eliminação</h2><p>O que você precisa parar, reduzir ou delegar</p></div><button class="btn-gold" onclick="openM('m-elim')">+ Adicionar</button></div>
         <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">💡 Crescimento não é só adicionar coisas boas — é também remover as que drenam energia e foco.</div></div></div>
         <div class="st" style="color:var(--rd)">🔴 Eliminar — Para de vez</div>
         <div class="elim-card elim-red"><div class="elim-h"><div class="elim-icon">📱</div><div class="elim-title">Rolagem de feed sem propósito</div></div><div class="elim-sub">Passa +2h/dia rolando redes sociais sem objetivo. Esse tempo poderia ir para devocional, academia ou família.</div><div class="elim-streak elim-s-ok">✅ 3 dias sem fazer isso</div></div>
@@ -810,7 +918,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- IA COACH -->
       <div class="page" id="page-ia">
-        <div class="ph"><div><h2>🤖 Coach IA</h2><p>Treinado para te desafiar, acolher e orientar</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>🤖 Coach IA</h2><p>Treinado para te desafiar, acolher e orientar</p></div></div>
         <div class="crisis-banner" id="crisis-banner">
           <div style="font-size:28px">💜</div>
           <div class="crisis-text"><h4>Modo Acolhimento Ativo</h4><p>Percebi que você pode estar passando por um momento difícil. Estou aqui. Seu mentor também foi notificado com carinho.</p></div>
@@ -828,7 +937,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- DIÁRIO REFLEXIVO -->
       <div class="page" id="page-diario">
-        <div class="ph"><div><h2>📓 Diário Reflexivo</h2><p>Escreva seu dia — a IA lê e responde</p></div><button class="btn-gold" onclick="openM('m-diario')">+ Novo Registro</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>📓 Diário Reflexivo</h2><p>Escreva seu dia — a IA lê e responde</p></div><button class="btn-gold" onclick="openM('m-diario')">+ Novo Registro</button></div>
         <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">✍️ Escreva como foi seu dia em 3 linhas. A IA vai identificar padrões e te dar uma devolução personalizada.</div></div></div>
         <div class="diary-entry">
           <div class="de-date">Sexta-feira, 25 de Abril de 2026</div>
@@ -844,7 +954,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- CHECK-IN SEMANAL -->
       <div class="page" id="page-checkin">
-        <div class="ph"><div><h2>📊 Check-in Semanal</h2><p>5 perguntas — gera seu relatório automaticamente</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>📊 Check-in Semanal</h2><p>5 perguntas — gera seu relatório automaticamente</p></div></div>
         <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">Faça esse check-in todo domingo. Suas respostas geram o relatório que seu mentor receberá automaticamente.</div></div></div>
         <div class="checkin-q">
           <div class="cq-num">Pergunta 1 de 5</div>
@@ -891,7 +1002,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- CARTA AO FUTURO -->
       <div class="page" id="page-carta">
-        <div class="ph"><div><h2>💌 Carta ao Futuro</h2><p>Escreva para si mesmo — recebe em 6 meses</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>💌 Carta ao Futuro</h2><p>Escreva para si mesmo — recebe em 6 meses</p></div></div>
         <div class="al gold" style="margin-bottom:20px"><div class="aldot dgo"></div><div class="al-body"><div class="al-text">✦ Escreva uma carta para você mesmo hoje. O sistema enviará automaticamente em <strong>27 de outubro de 2026</strong>. A IA comparará com o que realmente aconteceu no app.</div></div></div>
         <div class="letter-card">
           <div class="letter-header">Querido eu do futuro,</div>
@@ -911,7 +1023,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- CONQUISTAS -->
       <div class="page" id="page-conquistas">
-        <div class="ph"><div><h2>💎 Conquistas & Níveis</h2><p>Sua jornada de crescimento em pedras preciosas</p></div></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>💎 Conquistas & Níveis</h2><p>Sua jornada de crescimento em pedras preciosas</p></div></div>
         <div class="st">Seu Nível Atual</div>
         <div class="gems-grid">
           <div class="gem locked"><div class="gem-icon">🪨</div><div class="gem-name">Pedra Bruta</div><div class="gem-pts">0–99 pts</div></div>
@@ -943,7 +1056,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- ADMIN -->
       <div class="page" id="page-admin">
-        <div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos da mentoria</p></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>👑 Painel Admin</h2><p>Visão completa de todos os alunos da mentoria</p></div>
         <div class="ha">
           <button class="btn-sm" onclick="go('relatorio',null)">📄 Relatório</button>
           <button class="btn-gold" onclick="openM('m-invite')">+ Convidar Aluno</button>
@@ -968,7 +1082,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 
       <!-- RELATÓRIO PDF -->
       <div class="page" id="page-relatorio">
-        <div class="ph"><div><h2>📄 Relatório Pré-Sessão</h2><p>Gerado automaticamente para cada aluno</p></div><button class="btn-gold" onclick="alert('Exportando PDF... Em produção isso geraria um PDF real!')">⬇ Exportar PDF</button></div>
+        <button class="back-btn" onclick="go('dashboard',null);setMnav('mn-home')"><span class="back-arrow">←</span> Voltar</button>
+<div class="ph"><div><h2>📄 Relatório Pré-Sessão</h2><p>Gerado automaticamente para cada aluno</p></div><button class="btn-gold" onclick="alert('Exportando PDF... Em produção isso geraria um PDF real!')">⬇ Exportar PDF</button></div>
         <div class="al blue" style="margin-bottom:20px"><div class="aldot db"></div><div class="al-body"><div class="al-text">Este relatório é gerado automaticamente antes de cada sessão de mentoria. Você chega preparado sem precisar perguntar nada.</div></div></div>
         <div class="report-preview">
           <div class="rp-header"><div><div class="rp-title">✦ Relatório Pré-Sessão</div><div style="font-size:12px;color:var(--mu);margin-top:3px">Semana 17 · 21–27 de Abril de 2026</div></div><div style="text-align:right"><div class="rp-student">João Silva</div><div style="font-size:11px;color:var(--mu)">🔵 Safira · 187 pts</div></div></div>
@@ -1084,10 +1199,29 @@ async function doLogin(){
       btn.textContent='Entrar';btn.disabled=false;return;
     }
     const isAdmin=email===ADMIN_EMAIL;
+    // Try to get name from user_metadata first (saved at signup)
+    const meta=data.user?.user_metadata||{};
+    let displayName=meta.nome||meta.full_name||meta.name||'';
+    // If no name in metadata, try to fetch from profiles table
+    if(!displayName&&!isAdmin){
+      try{
+        const r=await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=nome`,{
+          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+data.access_token}
+        });
+        const profile=await r.json();
+        if(profile&&profile[0]&&profile[0].nome) displayName=profile[0].nome;
+      }catch(e){}
+    }
+    // Last fallback: use email part before @ but capitalize nicely
+    if(!displayName){
+      const emailLocal=email.split('@')[0];
+      displayName=emailLocal.charAt(0).toUpperCase()+emailLocal.slice(1);
+    }
+    if(isAdmin) displayName='Admin';
     CU={
       id:data.user.id,
       email,
-      name:isAdmin?'Admin':email.split('@')[0],
+      name:displayName,
       role:isAdmin?'admin':'aluno',
       lvl:isAdmin?'👑 Admin':'🪨 Pedra Bruta',
       av:isAdmin?'👑':'👤',
@@ -1192,7 +1326,11 @@ function finishOb(){
 
 // ─── START APP ───
 function startApp(){
-  document.getElementById('app').style.display='block';
+  ['login-screen','register-screen','onboarding','ritual-overlay'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.cssText='display:none!important';
+  });
+  document.getElementById('app').style.cssText='display:block!important';
   const u=CU;
   document.getElementById('sb-av').textContent=u.av;
   document.getElementById('sb-name').textContent=u.name;
@@ -1201,14 +1339,19 @@ function startApp(){
   const now=new Date();
   const h=now.getHours();
   const g=h>=5&&h<12?'Bom dia':h>=12&&h<18?'Boa tarde':'Boa noite';
-  document.getElementById('d-greet').textContent=g+', '+u.name.split(' ')[0]+'! ✨';
+  const firstName=getFirstName(u.name);
+  document.getElementById('d-greet').textContent=g+', '+firstName+'! ✨';
   document.getElementById('d-date').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   document.getElementById('ag-dt').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('d-rab').style.display='block';
   const v=VERSES[Math.floor(Math.random()*VERSES.length)];
   document.getElementById('d-verse').textContent=v.t;
-  // Show ritual after short delay
-  setTimeout(()=>showRitual(),400);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const firstNb=document.querySelector('.nb');
+  if(firstNb)firstNb.classList.add('active');
+  setTimeout(initGroups,100);
 }
 
 // ─── RITUAL ───
@@ -1364,6 +1507,49 @@ function saveCarta(){
   alert('💌 Carta selada! Será enviada para você em 27 de outubro de 2026. A IA irá comparar com seu progresso no app. Obrigado por se comprometer com o futuro!');
   document.querySelector('.seal.off:nth-child(6)').classList.remove('off');
   document.querySelector('.seal.off:nth-child(6)').classList.add('on');
+}
+
+// ─── MOBILE NAV ───
+function setMnav(id){
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById(id);
+  if(el)el.classList.add('active');
+}
+
+// ─── COLLAPSIBLE GROUPS ───
+function toggleGroup(id,toggle){
+  const group=document.getElementById(id);
+  if(!group)return;
+  const isCollapsed=toggle.classList.contains('collapsed');
+  if(isCollapsed){
+    toggle.classList.remove('collapsed');
+    group.classList.remove('collapsed');
+    group.style.maxHeight=group.scrollHeight+'px';
+  } else {
+    toggle.classList.add('collapsed');
+    group.classList.add('collapsed');
+    group.style.maxHeight='0';
+  }
+}
+
+// Init groups open
+function initGroups(){
+  document.querySelectorAll('.ns-group').forEach(g=>{
+    g.style.maxHeight=g.scrollHeight+'px';
+  });
+}
+
+// ─── FIX USERNAME ───
+function getFirstName(nameOrEmail){
+  if(!nameOrEmail)return 'Amigo';
+  // If it's an email, extract part before @
+  if(nameOrEmail.includes('@')){
+    const local=nameOrEmail.split('@')[0];
+    // Capitalize first letter
+    return local.charAt(0).toUpperCase()+local.slice(1);
+  }
+  // If it's a real name, get first word
+  return nameOrEmail.split(' ')[0];
 }
 
 // ─── INVITE ───
