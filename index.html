@@ -415,6 +415,37 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 .more-item:active{border-color:var(--go);color:var(--go);}
 .more-ic{font-size:20px;}
 
+/* ══ ONBOARDING CHOICES ══ */
+.ob-choice-group{margin-bottom:4px;}
+.ob-choice-label{font-size:13px;font-weight:700;color:var(--t);margin-bottom:10px;line-height:1.5;}
+.ob-choices{display:flex;flex-direction:column;gap:8px;}
+.ob-choice{
+  background:var(--s2);border:1px solid var(--bd);color:var(--mu);
+  padding:12px 16px;border-radius:11px;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:600;
+  text-align:left;transition:all 0.2s;width:100%;
+}
+.ob-choice:hover{border-color:var(--go);color:var(--t);}
+.ob-choice.selected{background:var(--ga);border-color:var(--go);color:var(--go);}
+
+/* ══ ONBOARDING SUMMARY ══ */
+.ob-sum-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--s2);border:1px solid var(--bd);
+  border-radius:10px;padding:11px 14px;font-size:13px;
+}
+.ob-sum-icon{font-size:16px;flex-shrink:0;}
+.ob-sum-text{flex:1;line-height:1.4;}
+.ob-sum-score{font-size:12px;font-weight:800;color:var(--go);}
+
+/* ══ TEXTAREA ══ */
+.ob-card textarea{
+  width:100%;background:var(--s2);border:1px solid var(--bd);
+  color:var(--t);padding:11px 14px;border-radius:10px;
+  font-family:'Syne',sans-serif;font-size:13px;outline:none;resize:none;
+}
+.ob-card textarea:focus{border-color:var(--go);}
+
 /* ══ SIDEBAR COLLAPSIBLE ══ */
 .ns-toggle{
   display:flex;align-items:center;justify-content:space-between;
@@ -491,17 +522,25 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 </div>
 
 <!-- ════ ONBOARDING ════ -->
-<div id="onboarding">
+<div id="onboarding" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:1800;overflow-y:auto;">
   <div class="ob-wrap">
     <div class="ob-card">
-      <div class="sbar">
-        <div class="sd on" id="sd1"></div><div class="sd" id="sd2"></div>
-        <div class="sd" id="sd3"></div><div class="sd" id="sd4"></div><div class="sd" id="sd5"></div>
+
+      <!-- PROGRESS -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;font-weight:700">Configurando seu Ecossistema</span>
+          <span style="font-size:11px;color:var(--go);font-weight:700" id="ob-progress-txt">Etapa 1 de 9</span>
+        </div>
+        <div style="height:4px;background:var(--s3);border-radius:2px">
+          <div id="ob-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--go),var(--go2));border-radius:2px;transition:width 0.4s ease;width:11%"></div>
+        </div>
       </div>
-      <!-- Step 1 -->
+
+      <!-- STEP 1: Dados Pessoais -->
       <div class="ob-step active" id="os1">
         <h2>✦ Vamos te conhecer</h2>
-        <p>Isso leva 4 minutos e personaliza tudo para a sua realidade.</p>
+        <p>Suas respostas personalizam completamente o app. Leva cerca de 5 minutos.</p>
         <div class="fg"><label>Nome completo</label><input id="ob-nome" placeholder="Seu nome completo"></div>
         <div class="fg"><label>Estado civil</label>
           <select id="ob-civil" onchange="civilChange()">
@@ -509,25 +548,77 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
             <option value="solteiro">Solteiro(a)</option>
             <option value="casado">Casado(a)</option>
             <option value="divorciado">Divorciado(a)</option>
+            <option value="viuvo">Viúvo(a)</option>
           </select>
         </div>
-        <div class="fg" id="f-conjuge" style="display:none"><label>Nome do cônjuge</label><input id="ob-conjuge" placeholder="Nome"></div>
-        <div class="fg"><label>Tem filhos?</label>
-          <select id="ob-filhos" onchange="filhosChange()"><option value="nao">Não</option><option value="sim">Sim</option></select>
+        <div class="fg" id="f-conjuge" style="display:none">
+          <label>Nome do cônjuge</label>
+          <input id="ob-conjuge" placeholder="Nome do cônjuge">
         </div>
-        <div class="fg" id="f-filhos" style="display:none"><label>Nome e idade dos filhos</label><input id="ob-filhos-n" placeholder="Ex: Pedro (8), Ana (5)"></div>
+        <div class="fg"><label>Tem filhos?</label>
+          <select id="ob-filhos" onchange="filhosChange()">
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+          </select>
+        </div>
+        <div class="fg" id="f-filhos" style="display:none">
+          <label>Nome e idade dos filhos</label>
+          <input id="ob-filhos-n" placeholder="Ex: Pedro (8), Ana (5)">
+        </div>
+        <div class="fg"><label>Qual sua maior área de dificuldade hoje?</label>
+          <select id="ob-desafio">
+            <option value="disciplina">Disciplina e consistência</option>
+            <option value="equilibrio">Equilíbrio entre áreas da vida</option>
+            <option value="financas">Finanças desorganizadas</option>
+            <option value="familia">Tempo para família</option>
+            <option value="saude">Saúde e energia</option>
+            <option value="espiritual">Vida espiritual</option>
+          </select>
+        </div>
         <button class="btn-next" onclick="obGo(2)">Continuar →</button>
       </div>
-      <!-- Step 2 -->
+
+      <!-- STEP 2: Família -->
       <div class="ob-step" id="os2">
         <h2>👨‍👩‍👧 Família & Relacionamentos</h2>
-        <p>Vou usar os nomes reais para criar alertas personalizados para você.</p>
-        <div class="fg"><label>Nome da mãe</label><input id="ob-mae" placeholder="Nome da sua mãe"></div>
-        <div class="fg"><label>Nome do pai</label><input id="ob-pai" placeholder="Nome do seu pai"></div>
-        <div class="fg"><label>Pessoas próximas (amigos, irmãos, sócios...)</label>
+        <p>O app só vai te lembrar das pessoas que você confirmar que fazem parte da sua vida.</p>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Sua mãe faz parte da sua vida ativamente?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'mae','sim')">✅ Sim, tenho contato</button>
+            <button class="ob-choice" onclick="obChoice(this,'mae','melhorar')">🔔 Quero melhorar o contato</button>
+            <button class="ob-choice" onclick="obChoice(this,'mae','nao')">❌ Não se aplica</button>
+          </div>
+        </div>
+        <div class="fg ob-conditional" id="f-mae" style="display:none">
+          <label>Nome da sua mãe</label>
+          <input id="ob-mae" placeholder="Nome">
+          <label style="margin-top:10px;display:block">Lembrar de contatar a cada:</label>
+          <select id="ob-freq-mae"><option value="7">Toda semana</option><option value="15">A cada 15 dias</option><option value="30">Uma vez por mês</option></select>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Seu pai faz parte da sua vida ativamente?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'pai','sim')">✅ Sim, tenho contato</button>
+            <button class="ob-choice" onclick="obChoice(this,'pai','melhorar')">🔔 Quero melhorar o contato</button>
+            <button class="ob-choice" onclick="obChoice(this,'pai','nao')">❌ Não se aplica</button>
+          </div>
+        </div>
+        <div class="fg ob-conditional" id="f-pai" style="display:none">
+          <label>Nome do seu pai</label>
+          <input id="ob-pai" placeholder="Nome">
+          <label style="margin-top:10px;display:block">Lembrar de contatar a cada:</label>
+          <select id="ob-freq-pai"><option value="7">Toda semana</option><option value="15">A cada 15 dias</option><option value="30">Uma vez por mês</option></select>
+        </div>
+
+        <div class="fg" style="margin-top:16px">
+          <label>Amigos ou pessoas próximas que quer manter contato</label>
           <div class="people-list" id="plist">
             <div class="person-row">
-              <input placeholder="Nome" class="pname"><select class="prel"><option>Amigo(a)</option><option>Irmão/Irmã</option><option>Sócio</option><option>Mentor</option><option>Outro</option></select>
+              <input placeholder="Nome" class="pname">
+              <select class="prel"><option>Amigo(a)</option><option>Irmão/Irmã</option><option>Sócio</option><option>Mentor</option><option>Outro</option></select>
               <button class="rm-btn" onclick="rmRow(this)">×</button>
             </div>
           </div>
@@ -535,57 +626,314 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
         </div>
         <button class="btn-next" onclick="obGo(3)">Continuar →</button>
       </div>
-      <!-- Step 3 -->
+
+      <!-- STEP 3: Espiritual -->
       <div class="ob-step" id="os3">
         <h2>🙏 Vida Espiritual</h2>
-        <p>Seu acompanhamento espiritual será personalizado com base nessas respostas.</p>
-        <div class="fg"><label>Frequência na igreja</label>
-          <select id="ob-igreja"><option value="regular">Toda semana — sou comprometido</option><option value="irregular">Às vezes</option><option value="nao">Não frequento no momento</option></select>
-        </div>
-        <div class="fg"><label>O que já pratica diariamente</label>
-          <div class="cbs">
-            <label class="cb-item"><input type="checkbox" id="cb-bib"><span>📖 Leitura Bíblica</span></label>
-            <label class="cb-item"><input type="checkbox" id="cb-dev"><span>🕯️ Devocional</span></label>
-            <label class="cb-item"><input type="checkbox" id="cb-ora"><span>🙏 Oração</span></label>
-            <label class="cb-item"><input type="checkbox" id="cb-cel"><span>🏠 Célula/Grupo</span></label>
+        <p>Confirme apenas o que faz parte da sua vida — sem cobranças do que não é sua realidade.</p>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Você frequenta uma igreja ou comunidade de fé?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'igreja','regular')">🔥 Sim, toda semana</button>
+            <button class="ob-choice" onclick="obChoice(this,'igreja','irregular')">🔔 Sim, mas quero ser mais consistente</button>
+            <button class="ob-choice" onclick="obChoice(this,'igreja','nao')">❌ Não frequento</button>
           </div>
         </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Faz leitura bíblica? Quer ser lembrado diariamente?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'biblia','sim')">✅ Já faço e quero manter</button>
+            <button class="ob-choice" onclick="obChoice(this,'biblia','comecar')">🔔 Quero começar — me lembre!</button>
+            <button class="ob-choice" onclick="obChoice(this,'biblia','nao')">❌ Não faz parte dos meus planos</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Faz devocional diário?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'devocional','sim')">✅ Sim, faço regularmente</button>
+            <button class="ob-choice" onclick="obChoice(this,'devocional','comecar')">🔔 Quero começar — me lembre!</button>
+            <button class="ob-choice" onclick="obChoice(this,'devocional','nao')">❌ Não por enquanto</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Tem momento de oração no dia?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'oracao','sim')">✅ Sim, toda manhã</button>
+            <button class="ob-choice" onclick="obChoice(this,'oracao','comecar')">🔔 Quero ter — me lembre!</button>
+            <button class="ob-choice" onclick="obChoice(this,'oracao','nao')">❌ Não por enquanto</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Participa de célula ou grupo de fé?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'celula','sim')">✅ Sim</button>
+            <button class="ob-choice" onclick="obChoice(this,'celula','nao')">❌ Não</button>
+          </div>
+        </div>
+
         <button class="btn-next" onclick="obGo(4)">Continuar →</button>
       </div>
-      <!-- Step 4 -->
+
+      <!-- STEP 4: Saúde -->
       <div class="ob-step" id="os4">
-        <h2>💪 Saúde & Hábitos</h2>
-        <p>Me fale sobre seus hábitos de saúde atuais.</p>
-        <div class="fg"><label>Exercício físico</label>
-          <select id="ob-ac"><option value="regular">Sim — 3x ou mais por semana</option><option value="irregular">Sim — às vezes (1-2x)</option><option value="nao">Não pratico no momento</option></select>
+        <h2>💪 Saúde & Bem-Estar</h2>
+        <p>Confirme seus hábitos reais. O app vai acompanhar só o que você escolher.</p>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Pratica exercício físico?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'academia','regular')">🔥 Sim, 3x ou mais por semana</button>
+            <button class="ob-choice" onclick="obChoice(this,'academia','irregular')">⚡ Às vezes (1-2x)</button>
+            <button class="ob-choice" onclick="obChoice(this,'academia','comecar')">🔔 Quero começar — me lembre!</button>
+            <button class="ob-choice" onclick="obChoice(this,'academia','nao')">❌ Não pratico e não planejo agora</button>
+          </div>
         </div>
-        <div class="fg"><label>Horas de sono por noite</label>
-          <select id="ob-sono"><option>Menos de 5h</option><option>5-6h</option><option selected>7-8h</option><option>Mais de 8h</option></select>
+        <div class="fg ob-conditional" id="f-academia" style="display:none">
+          <label>Qual tipo de exercício?</label>
+          <select id="ob-exercicio"><option>Academia</option><option>Caminhada/Corrida</option><option>Esporte</option><option>Yoga/Pilates</option><option>Outro</option></select>
+          <label style="margin-top:10px;display:block">Quantas vezes por semana é sua meta?</label>
+          <select id="ob-freq-ac"><option value="2">2x por semana</option><option value="3">3x por semana</option><option value="4">4x por semana</option><option value="5">5x ou mais</option></select>
         </div>
-        <div class="fg"><label>Maior desafio hoje</label>
-          <select id="ob-des"><option>Disciplina e consistência</option><option>Equilíbrio entre áreas</option><option>Finanças desorganizadas</option><option>Tempo para família</option><option>Saúde e energia</option></select>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Como está seu sono?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'sono','bom')">✅ Durmo bem (7h+)</button>
+            <button class="ob-choice" onclick="obChoice(this,'sono','regular')">⚠️ Regular (5-7h)</button>
+            <button class="ob-choice" onclick="obChoice(this,'sono','ruim')">❌ Durmo pouco ou mal</button>
+          </div>
         </div>
-        <div class="fg"><label>O que você quer ELIMINAR da sua vida?</label>
-          <input id="ob-elim" placeholder="Ex: Redes sociais em excesso, gastos impulsivos..."></div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Quer ser lembrado de beber água diariamente?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'agua','sim')">✅ Sim, me lembre!</button>
+            <button class="ob-choice" onclick="obChoice(this,'agua','nao')">❌ Não preciso</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Como avalia sua saúde mental hoje?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'mental','bem')">✅ Bem, estável</button>
+            <button class="ob-choice" onclick="obChoice(this,'mental','regular')">⚠️ Regular, alguns altos e baixos</button>
+            <button class="ob-choice" onclick="obChoice(this,'mental','atencao')">🔴 Precisa de atenção</button>
+          </div>
+        </div>
+
         <button class="btn-next" onclick="obGo(5)">Continuar →</button>
       </div>
-      <!-- Step 5 -->
+
+      <!-- STEP 5: Financeiro -->
       <div class="ob-step" id="os5">
-        <h2>💰 Finanças & Empresa</h2>
-        <p>Configure seu módulo financeiro completo.</p>
-        <div class="fg"><label>Perfil financeiro</label>
-          <select id="ob-pf"><option value="pf">Pessoa Física (PF) apenas</option><option value="pj">Pessoa Jurídica (PJ) apenas</option><option value="ambos">Ambos — PF + PJ separados</option></select>
+        <h2>💰 Financeiro</h2>
+        <p>Configure seu controle financeiro do jeito que faz sentido para você.</p>
+
+        <div class="fg">
+          <label>Perfil financeiro</label>
+          <select id="ob-pf">
+            <option value="pf">Pessoa Física (PF) apenas</option>
+            <option value="pj">Pessoa Jurídica (PJ) apenas</option>
+            <option value="ambos">Ambos — PF + PJ separados</option>
+          </select>
         </div>
-        <div class="fg"><label>Nome da empresa (se aplicável)</label><input id="ob-emp" placeholder="Ex: João Silva MEI"></div>
-        <div class="fg"><label>Segmento do negócio</label>
-          <select id="ob-seg"><option>Serviços</option><option>Produtos</option><option>Educação/Mentoria</option><option>Saúde</option><option>Tecnologia</option><option>Outro</option></select>
+        <div class="fg" id="f-empresa">
+          <label>Nome da empresa (se tiver)</label>
+          <input id="ob-emp" placeholder="Ex: João Silva MEI">
         </div>
-        <div class="fg"><label>Meta de faturamento mensal (R$)</label><input type="number" id="ob-meta" placeholder="Ex: 10000"></div>
-        <div class="fg"><label>Objetivo financeiro principal</label>
-          <select id="ob-obj"><option>Construir reserva de emergência</option><option>Quitar dívidas</option><option>Começar a investir</option><option>Escalar o faturamento</option></select>
+
+        <div class="ob-choice-group" style="margin-top:4px">
+          <div class="ob-choice-label">Como está seu controle financeiro hoje?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'controle-fin','bom')">✅ Organizado — sei o que entra e sai</button>
+            <button class="ob-choice" onclick="obChoice(this,'controle-fin','basico')">⚠️ Básico — anoto algumas coisas</button>
+            <button class="ob-choice" onclick="obChoice(this,'controle-fin','nenhum')">❌ Nenhum controle ainda</button>
+          </div>
         </div>
-        <button class="btn-next" onclick="finishOb()">🚀 Criar meu Ecossistema!</button>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Tem dívidas?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'dividas','nao')">✅ Não tenho dívidas</button>
+            <button class="ob-choice" onclick="obChoice(this,'dividas','controladas')">⚠️ Sim, mas estão controladas</button>
+            <button class="ob-choice" onclick="obChoice(this,'dividas','preocupante')">🔴 Sim, é preocupante</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Tem reserva de emergência?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'reserva','sim')">✅ Sim, tenho reserva</button>
+            <button class="ob-choice" onclick="obChoice(this,'reserva','parcial')">⚠️ Parcialmente</button>
+            <button class="ob-choice" onclick="obChoice(this,'reserva','nao')">❌ Não tenho ainda</button>
+          </div>
+        </div>
+
+        <div class="fg" style="margin-top:16px">
+          <label>Objetivo financeiro principal</label>
+          <select id="ob-obj">
+            <option value="reserva">Construir reserva de emergência</option>
+            <option value="dividas">Quitar dívidas</option>
+            <option value="investir">Começar a investir</option>
+            <option value="crescer">Aumentar faturamento</option>
+            <option value="organizar">Organizar as finanças</option>
+          </select>
+        </div>
+
+        <div class="fg">
+          <label>Meta de faturamento/renda mensal (R$) — opcional</label>
+          <input type="number" id="ob-meta" placeholder="Ex: 10000">
+        </div>
+
+        <button class="btn-next" onclick="obGo(6)">Continuar →</button>
       </div>
+
+      <!-- STEP 6: Trabalho -->
+      <div class="ob-step" id="os6">
+        <h2>💼 Trabalho & Negócio</h2>
+        <p>Me fale sobre sua situação profissional atual.</p>
+
+        <div class="fg">
+          <label>Situação profissional atual</label>
+          <select id="ob-trabalho">
+            <option value="empresario">Empresário / Empreendedor</option>
+            <option value="autonomo">Autônomo / Freelancer</option>
+            <option value="clt">CLT / Funcionário</option>
+            <option value="liberal">Profissional liberal</option>
+            <option value="desempregado">Em transição de carreira</option>
+          </select>
+        </div>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Está satisfeito com sua situação profissional?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'satisf-trab','sim')">✅ Sim, estou bem</button>
+            <button class="ob-choice" onclick="obChoice(this,'satisf-trab','parcial')">⚠️ Parcialmente</button>
+            <button class="ob-choice" onclick="obChoice(this,'satisf-trab','nao')">❌ Quero mudar essa realidade</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Tem metas profissionais definidas?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'metas-trab','sim')">✅ Sim, bem definidas</button>
+            <button class="ob-choice" onclick="obChoice(this,'metas-trab','vagas')">⚠️ Tenho ideias mas não definidas</button>
+            <button class="ob-choice" onclick="obChoice(this,'metas-trab','nao')">❌ Preciso definir</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Quantas horas trabalha por dia em média?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'horas-trab','ate8')">⏰ Até 8h (saudável)</button>
+            <button class="ob-choice" onclick="obChoice(this,'horas-trab','ate10')">⚡ 8-10h</button>
+            <button class="ob-choice" onclick="obChoice(this,'horas-trab','mais10')">🔴 Mais de 10h</button>
+          </div>
+        </div>
+
+        <button class="btn-next" onclick="obGo(7)">Continuar →</button>
+      </div>
+
+      <!-- STEP 7: Desenvolvimento -->
+      <div class="ob-step" id="os7">
+        <h2>📚 Desenvolvimento Pessoal</h2>
+        <p>O que você quer desenvolver na sua vida?</p>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Lê livros regularmente? Quer ser acompanhado nisso?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'leitura','sim')">✅ Sim, leio regularmente</button>
+            <button class="ob-choice" onclick="obChoice(this,'leitura','comecar')">🔔 Quero começar a ler mais</button>
+            <button class="ob-choice" onclick="obChoice(this,'leitura','nao')">❌ Não por enquanto</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Está fazendo algum curso ou formação?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'curso','sim')">✅ Sim</button>
+            <button class="ob-choice" onclick="obChoice(this,'curso','planejando')">🔔 Planejando começar</button>
+            <button class="ob-choice" onclick="obChoice(this,'curso','nao')">❌ Não no momento</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Tem tempo de lazer e descanso na sua rotina?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'lazer','sim')">✅ Sim, me cuido</button>
+            <button class="ob-choice" onclick="obChoice(this,'lazer','pouco')">⚠️ Pouco, preciso melhorar</button>
+            <button class="ob-choice" onclick="obChoice(this,'lazer','nao')">❌ Quase nenhum</button>
+          </div>
+        </div>
+
+        <div class="fg" style="margin-top:16px">
+          <label>Qual seu maior objetivo de crescimento pessoal?</label>
+          <input id="ob-obj-pessoal" placeholder="Ex: Ser mais disciplinado, ter mais equilíbrio...">
+        </div>
+
+        <button class="btn-next" onclick="obGo(8)">Continuar →</button>
+      </div>
+
+      <!-- STEP 8: Mental & Eliminação -->
+      <div class="ob-step" id="os8">
+        <h2>🧠 Mental & Zona de Eliminação</h2>
+        <p>O que você quer parar, reduzir ou eliminar da sua vida para ter mais foco?</p>
+
+        <div class="ob-choice-group">
+          <div class="ob-choice-label">Sofre de ansiedade ou estresse com frequência?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'ansiedade','raramente')">✅ Raramente</button>
+            <button class="ob-choice" onclick="obChoice(this,'ansiedade','as-vezes')">⚠️ Às vezes</button>
+            <button class="ob-choice" onclick="obChoice(this,'ansiedade','frequente')">🔴 Com frequência</button>
+          </div>
+        </div>
+
+        <div class="ob-choice-group" style="margin-top:16px">
+          <div class="ob-choice-label">Quanto tempo passa em redes sociais por dia?</div>
+          <div class="ob-choices">
+            <button class="ob-choice" onclick="obChoice(this,'redes','ate1h')">✅ Menos de 1h</button>
+            <button class="ob-choice" onclick="obChoice(this,'redes','1a2h')">⚠️ 1-2 horas</button>
+            <button class="ob-choice" onclick="obChoice(this,'redes','mais2h')">🔴 Mais de 2h (quero reduzir)</button>
+          </div>
+        </div>
+
+        <div class="fg" style="margin-top:16px">
+          <label>O que você quer ELIMINAR da sua vida? <span style="color:var(--mu)">(hábitos, comportamentos, situações)</span></label>
+          <textarea id="ob-elim" rows="3" placeholder="Ex: Redes sociais à noite, gastos impulsivos, reuniões sem pauta..."></textarea>
+        </div>
+
+        <div class="fg">
+          <label>O que você quer REDUZIR? <span style="color:var(--mu)">(colocar limite)</span></label>
+          <textarea id="ob-reduzir" rows="2" placeholder="Ex: Tempo no WhatsApp, horas extras no trabalho..."></textarea>
+        </div>
+
+        <button class="btn-next" onclick="obGo(9)">Continuar →</button>
+      </div>
+
+      <!-- STEP 9: Confirmação Final -->
+      <div class="ob-step" id="os9">
+        <h2>🎯 Quase lá!</h2>
+        <p>Revise seus principais compromissos antes de entrar no seu Ecossistema.</p>
+
+        <div id="ob-summary" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px"></div>
+
+        <div class="fg">
+          <label>Uma palavra que define onde você quer chegar</label>
+          <input id="ob-palavra" placeholder="Ex: Equilíbrio, Liberdade, Crescimento...">
+        </div>
+
+        <div style="background:var(--ga);border:1px solid rgba(200,164,74,0.2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;line-height:1.6;color:var(--t)">
+          ✦ Ao entrar no Ecossistema, você se compromete a ser honesto consigo mesmo. O app só funciona se você usar com verdade.
+        </div>
+
+        <button class="btn-next" onclick="finishOb()">✦ Entrar no meu Ecossistema!</button>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1265,6 +1613,21 @@ async function doLogin(){
       newUser:false
     };
     document.getElementById('login-screen').style.display='none';
+    // Check if new user (no nome in profile)
+    if(CU.role!=='admin'&&(!displayName||displayName===email.split('@')[0])){
+      // Might be new user - show onboarding
+      try{
+        const pr=await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=nome`,{
+          headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+data.access_token}
+        });
+        const pdata=await pr.json();
+        const hasProfile=pdata&&pdata[0]&&pdata[0].nome;
+        if(!hasProfile){
+          document.getElementById('onboarding').style.cssText='display:block!important;position:fixed;inset:0;background:var(--bg);z-index:1800;overflow-y:auto;';
+          return;
+        }
+      }catch(e){}
+    }
     startApp();
   }catch(err){
     alert('Erro de conexão. Verifique sua internet.');
@@ -1330,6 +1693,35 @@ async function doRegister(){
 }
 
 // ─── ONBOARDING ───
+const OB_TOTAL=9;
+let obChoices={};
+
+function obGo(n){
+  const cur=document.querySelector('.ob-step.active');
+  if(cur)cur.classList.remove('active');
+  const next=document.getElementById('os'+n);
+  if(next)next.classList.add('active');
+  obStep2=n;
+  const pct=Math.round((n/OB_TOTAL)*100);
+  const bar=document.getElementById('ob-progress-bar');
+  const txt=document.getElementById('ob-progress-txt');
+  if(bar)bar.style.width=pct+'%';
+  if(txt)txt.textContent='Etapa '+n+' de '+OB_TOTAL;
+  if(n===9)generateSummary();
+  document.getElementById('onboarding').scrollTop=0;
+}
+
+function obChoice(btn,key,val){
+  btn.closest('.ob-choices').querySelectorAll('.ob-choice').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  obChoices[key]=val;
+  const showMap={'mae':['sim','melhorar'],'pai':['sim','melhorar'],'academia':['regular','irregular','comecar']};
+  if(showMap[key]){
+    const f=document.getElementById('f-'+key);
+    if(f)f.style.display=showMap[key].includes(val)?'block':'none';
+  }
+}
+
 function civilChange(){
   const v=document.getElementById('ob-civil').value;
   document.getElementById('f-conjuge').style.display=v==='casado'?'block':'none';
@@ -1344,19 +1736,60 @@ function addPerson(){
   l.appendChild(r);
 }
 function rmRow(b){b.closest('.person-row').remove();}
-function obGo(n){
-  document.getElementById('os'+obStep2).classList.remove('active');
-  document.getElementById('sd'+obStep2).classList.add('on');
-  obStep2=n;
-  document.getElementById('os'+n).classList.add('active');
+
+function generateSummary(){
+  const scores={espiritual:0,saude:0,financeiro:0,familia:0,trabalho:0,mental:0,desenvolvimento:0};
+  if(obChoices.igreja==='regular')scores.espiritual+=25;else if(obChoices.igreja==='irregular')scores.espiritual+=10;
+  if(obChoices.biblia==='sim')scores.espiritual+=25;else if(obChoices.biblia==='comecar')scores.espiritual+=5;
+  if(obChoices.devocional==='sim')scores.espiritual+=25;else if(obChoices.devocional==='comecar')scores.espiritual+=5;
+  if(obChoices.oracao==='sim')scores.espiritual+=25;else if(obChoices.oracao==='comecar')scores.espiritual+=5;
+  if(obChoices.academia==='regular')scores.saude+=40;else if(obChoices.academia==='irregular')scores.saude+=20;else if(obChoices.academia==='comecar')scores.saude+=5;
+  if(obChoices.sono==='bom')scores.saude+=30;else if(obChoices.sono==='regular')scores.saude+=15;
+  if(obChoices.agua==='sim')scores.saude+=15;
+  if(obChoices.mental==='bem')scores.saude+=15;else if(obChoices.mental==='regular')scores.saude+=7;
+  if(obChoices['controle-fin']==='bom')scores.financeiro+=40;else if(obChoices['controle-fin']==='basico')scores.financeiro+=20;
+  if(obChoices.dividas==='nao')scores.financeiro+=30;else if(obChoices.dividas==='controladas')scores.financeiro+=15;
+  if(obChoices.reserva==='sim')scores.financeiro+=30;else if(obChoices.reserva==='parcial')scores.financeiro+=15;
+  if(obChoices.mae==='sim')scores.familia+=25;else if(obChoices.mae==='melhorar')scores.familia+=10;
+  if(obChoices.pai==='sim')scores.familia+=25;else if(obChoices.pai==='melhorar')scores.familia+=10;
+  scores.familia=Math.min(scores.familia+20,100);
+  if(obChoices['satisf-trab']==='sim')scores.trabalho+=50;else if(obChoices['satisf-trab']==='parcial')scores.trabalho+=25;
+  if(obChoices['metas-trab']==='sim')scores.trabalho+=30;else if(obChoices['metas-trab']==='vagas')scores.trabalho+=15;
+  if(obChoices['horas-trab']==='ate8')scores.trabalho+=20;else if(obChoices['horas-trab']==='ate10')scores.trabalho+=10;
+  if(obChoices.ansiedade==='raramente')scores.mental+=50;else if(obChoices.ansiedade==='as-vezes')scores.mental+=25;
+  if(obChoices.redes==='ate1h')scores.mental+=30;else if(obChoices.redes==='1a2h')scores.mental+=15;
+  if(obChoices.lazer==='sim')scores.mental+=20;else if(obChoices.lazer==='pouco')scores.mental+=10;
+  if(obChoices.leitura==='sim')scores.desenvolvimento+=35;else if(obChoices.leitura==='comecar')scores.desenvolvimento+=10;
+  if(obChoices.curso==='sim')scores.desenvolvimento+=35;else if(obChoices.curso==='planejando')scores.desenvolvimento+=15;
+  if(obChoices.lazer==='sim')scores.desenvolvimento+=30;
+  Object.keys(scores).forEach(k=>scores[k]=Math.min(scores[k],100));
+  window.obScores=scores;
+  const s=document.getElementById('ob-summary');
+  if(!s)return;
+  s.innerHTML='';
+  const gc=v=>v>=70?'var(--gn)':v>=40?'var(--go)':'var(--rd)';
+  [{icon:'🙏',text:'Vida Espiritual',k:'espiritual'},{icon:'💪',text:'Saúde',k:'saude'},{icon:'💰',text:'Financeiro',k:'financeiro'},{icon:'👨‍👩‍👧',text:'Família',k:'familia'},{icon:'💼',text:'Trabalho',k:'trabalho'},{icon:'🧠',text:'Mental',k:'mental'},{icon:'📚',text:'Desenvolvimento',k:'desenvolvimento'}].forEach(item=>{
+    const v=scores[item.k];
+    const d=document.createElement('div');d.className='ob-sum-item';
+    d.innerHTML=`<span class="ob-sum-icon">${item.icon}</span><span class="ob-sum-text">${item.text}</span><span class="ob-sum-score" style="color:${gc(v)}">${v}%</span>`;
+    s.appendChild(d);
+  });
 }
-function finishOb(){
-  const nome=document.getElementById('ob-nome').value||'Amigo';
-  const mae=document.getElementById('ob-mae').value;
-  USERS['joao@email.com'].name=nome;
-  USERS['joao@email.com'].newUser=false;
-  if(mae)document.getElementById('n-mae').textContent=mae;
-  document.getElementById('onboarding').style.display='none';
+
+async function finishOb(){
+  const nome=document.getElementById('ob-nome')?.value||CU.name||'';
+  if(nome)CU.name=nome;
+  CU.newUser=false;
+  CU.obChoices=obChoices;
+  CU.obScores=window.obScores||{};
+  try{
+    await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${CU.id}`,{
+      method:'PATCH',
+      headers:{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+CU.token},
+      body:JSON.stringify({nome,academia:obChoices.academia||'nao',igreja:obChoices.igreja||'nao',perfil_financeiro:document.getElementById('ob-pf')?.value||'pf',empresa:document.getElementById('ob-emp')?.value||'',meta_faturamento:parseFloat(document.getElementById('ob-meta')?.value)||0,mae:document.getElementById('ob-mae')?.value||'',pai:document.getElementById('ob-pai')?.value||''})
+    });
+  }catch(e){}
+  document.getElementById('onboarding').style.cssText='display:none!important';
   startApp();
 }
 
