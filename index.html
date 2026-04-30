@@ -372,8 +372,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
   font-size:16px;transition:all 0.2s;
 }
 .back-btn:hover .back-arrow{background:var(--ga);border-color:var(--go);}
-@media(max-width:900px){
-  .back-btn{display:flex;}
+@media(max-width:1024px){
+  .back-btn{display:flex!important;}
 }
 .mobile-nav{
   display:none;
@@ -402,6 +402,18 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
 @media(max-width:900px){
   .mobile-nav{display:block;}
 }
+
+/* ══ MOBILE MORE SHEET ══ */
+.more-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:600;display:none;align-items:flex-end;}
+.more-overlay.open{display:flex;}
+.more-sheet{background:var(--s1);border-top:1px solid var(--bd2);border-radius:20px 20px 0 0;padding:20px 16px 40px;width:100%;max-height:80vh;overflow-y:auto;animation:slideup 0.25s ease;}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.more-handle{width:36px;height:4px;background:var(--bd2);border-radius:2px;margin:0 auto 16px;}
+.more-title{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:14px;text-align:center;}
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.more-item{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:13px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--t);transition:all 0.2s;width:100%;}
+.more-item:active{border-color:var(--go);color:var(--go);}
+.more-ic{font-size:20px;}
 
 /* ══ SIDEBAR COLLAPSIBLE ══ */
 .ns-toggle{
@@ -643,22 +655,46 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:'Syne',san
     <nav class="mobile-nav">
       <div class="mobile-nav-inner">
         <button class="mnav-btn active" id="mn-home" onclick="go('dashboard',null);setMnav('mn-home')">
-          <span class="mni">🏠</span>Home
+          <span class="mni">🏠</span>HOME
         </button>
         <button class="mnav-btn" id="mn-esp" onclick="go('espiritual',null);setMnav('mn-esp')">
-          <span class="mni">🙏</span>Espiritual
+          <span class="mni">🙏</span>ESPIRITUAL
         </button>
         <button class="mnav-btn" id="mn-sau" onclick="go('saude',null);setMnav('mn-sau')">
-          <span class="mni">💪</span>Saúde
+          <span class="mni">💪</span>SAÚDE
         </button>
         <button class="mnav-btn" id="mn-fin" onclick="go('financas',null);setMnav('mn-fin')">
-          <span class="mni">💰</span>Finanças
+          <span class="mni">💰</span>FINANÇAS
         </button>
-        <button class="mnav-btn" id="mn-tar" onclick="go('tarefas',null);setMnav('mn-tar')">
-          <div class="mnav-icon-wrap"><span class="mni">✅</span></div>Tarefas
+        <button class="mnav-btn" id="mn-mais" onclick="openMore()">
+          <span class="mni">☰</span>MAIS
         </button>
       </div>
     </nav>
+
+    <!-- MORE SHEET -->
+    <div class="more-overlay" id="more-overlay" onclick="closeMore(event)">
+      <div class="more-sheet">
+        <div class="more-handle"></div>
+        <div class="more-title">Todas as seções</div>
+        <div class="more-grid">
+          <button class="more-item" onclick="goMore('tarefas')"><span class="more-ic">✅</span>Tarefas</button>
+          <button class="more-item" onclick="goMore('agenda')"><span class="more-ic">📅</span>Agenda</button>
+          <button class="more-item" onclick="goMore('alertas')"><span class="more-ic">🚨</span>Alertas</button>
+          <button class="more-item" onclick="goMore('oracao')"><span class="more-ic">✝️</span>Oração</button>
+          <button class="more-item" onclick="goMore('familia')"><span class="more-ic">👨‍👩‍👧</span>Família</button>
+          <button class="more-item" onclick="goMore('projetos')"><span class="more-ic">🎯</span>Projetos</button>
+          <button class="more-item" onclick="goMore('eliminacao')"><span class="more-ic">🚫</span>Eliminação</button>
+          <button class="more-item" onclick="goMore('ia')"><span class="more-ic">🤖</span>Coach IA</button>
+          <button class="more-item" onclick="goMore('diario')"><span class="more-ic">📓</span>Diário</button>
+          <button class="more-item" onclick="goMore('checkin')"><span class="more-ic">📊</span>Check-in</button>
+          <button class="more-item" onclick="goMore('carta')"><span class="more-ic">💌</span>Carta Futura</button>
+          <button class="more-item" onclick="goMore('conquistas')"><span class="more-ic">💎</span>Conquistas</button>
+          <button class="more-item" onclick="goMore('ritual')"><span class="more-ic">🌅</span>Ritual</button>
+          <button class="more-item" id="more-admin" style="display:none" onclick="goMore('admin')"><span class="more-ic">👑</span>Admin</button>
+        </div>
+      </div>
+    </div>
 
     <main class="content">
 
@@ -1507,6 +1543,25 @@ function saveCarta(){
   alert('💌 Carta selada! Será enviada para você em 27 de outubro de 2026. A IA irá comparar com seu progresso no app. Obrigado por se comprometer com o futuro!');
   document.querySelector('.seal.off:nth-child(6)').classList.remove('off');
   document.querySelector('.seal.off:nth-child(6)').classList.add('on');
+}
+
+// ─── MOBILE MORE SHEET ───
+function openMore(){
+  document.getElementById('more-overlay').classList.add('open');
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mn-mais').classList.add('active');
+  // Show admin button if admin
+  if(CU&&CU.role==='admin') document.getElementById('more-admin').style.display='flex';
+}
+function closeMore(e){
+  if(e.target===document.getElementById('more-overlay'))
+    document.getElementById('more-overlay').classList.remove('open');
+}
+function goMore(page){
+  document.getElementById('more-overlay').classList.remove('open');
+  go(page,null);
+  document.querySelectorAll('.mnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mn-mais').classList.add('active');
 }
 
 // ─── MOBILE NAV ───
